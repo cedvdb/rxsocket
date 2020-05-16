@@ -1,8 +1,7 @@
-import { Connection } from '../models/connection.interface';
 import { Action } from '../../../action-reaction';
 
 
 export interface ActionEvent{
-	connection: Connection;
+	react: (reaction: Action) => any;
 	action: Action;
 }

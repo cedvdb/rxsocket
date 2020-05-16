@@ -1,7 +1,7 @@
 import { ServerOptions } from 'http';
 import WebSocket from 'ws';
 import { HttpServer } from '../server/http-server.type';
-import { SocketBridge } from '../socket-bridge/socket-bridge.interface';
+import { SocketBridge } from '../bridge/socket-bridge.interface';
 
 export interface Config {
   server?: HttpServer;

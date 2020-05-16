@@ -2,8 +2,8 @@
 import { filter, map } from 'rxjs/operators';
 import { HttpServer } from '../server/http-server.type';
 import { createSimpleServer } from '../server/server';
-import { SocketBridge } from '../socket-bridge/socket-bridge.interface';
-import { WsSocketBridge } from '../socket-bridge/ws-socket-bridge.class';
+import { SocketBridge } from '../bridge/socket-bridge.interface';
+import { WsSocketBridge } from '../bridge/ws-socket-bridge.class';
 import { Config } from './config.interface';
 
 export class RxSocket {
@@ -18,11 +18,7 @@ export class RxSocket {
 
   select(type: string) {
     return this.socket.action$.pipe(
-      filter(event => event.action.type === type),
-      map(event => ({ 
-        payload: event.action.payload, 
-        react: event.react
-      }))
+      filter(event => event.type === type),
     );
   }
 }

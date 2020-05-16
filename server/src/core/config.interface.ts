@@ -1,12 +1,12 @@
 import { ServerOptions } from 'http';
 import WebSocket from 'ws';
 import { HttpServer } from '../server/http-server.type';
-import { SocketBridge } from '../bridge/socket-bridge.interface';
+import { Bridge } from '../bridge/bridge.interface';
 
 export interface Config {
   server?: HttpServer;
   serverOpts?: ServerOptions;
-  wsBridge?: SocketBridge;
+  wsBridge?: Bridge;
   wsOpts?: WebSocket.ServerOptions;
   disableLogging?: boolean;
 }

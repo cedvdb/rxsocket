@@ -1,13 +1,19 @@
 import { Observable } from 'rxjs';
-import { Action } from '../../../action-reaction';
+import { Action } from '../../../shared';
 import { Bridge } from '../bridge/bridge.interface';
 import { WebSocketBridge } from '../bridge/websocket-bridge.class';
 import { filter, map } from 'rxjs/operators';
+import { Config } from './config.interface';
 
-export class RxSocket {
+export class RxSocket implements Bridge {
   private wsBridge: Bridge;
-  
-  constructor(options: any) {
+
+  open$: Observable<any>;
+	action$: Observable<Action>;
+	error$: Observable<any>;
+  close$: Observable<any>;
+
+  constructor(options: Config) {
     this.wsBridge = options.wsBridge || new WebSocketBridge(options.url);
   }
 

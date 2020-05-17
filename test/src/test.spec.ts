@@ -1,7 +1,7 @@
 
 
-import { RxSocket as RxSocketClient } from '../../client/src/core/rx-socket.class';
-import { RxSocket as RxSocketServer } from '../../server/src/core/rx-socket.class';
+import { RxSocket as RxSocketClient } from '../../client/core/rx-socket.class';
+import { RxSocket as RxSocketServer } from '../../server/core/rx-socket.class';
 
 
 export const createClient = () => new RxSocketClient({ url: 'ws://localhost:3000/ws'});

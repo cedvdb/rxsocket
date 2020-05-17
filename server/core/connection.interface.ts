@@ -1,4 +1,4 @@
-import { Action } from '../../../src/shared';
+import { Action } from '~shared/action.interface';
 
 export interface Connection {
   connectionID: number;

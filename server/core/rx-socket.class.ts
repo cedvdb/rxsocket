@@ -1,12 +1,12 @@
 
 import { filter, map } from 'rxjs/operators';
-import { HttpServer } from '../server/http-server.type';
-import { createSimpleServer } from '../server/server';
+import { HttpServer } from '../http-server/http-server.type';
+import { createSimpleServer } from '../http-server/server';
 import { Bridge } from '../bridge/bridge.interface';
 import { WsSocketBridge } from '../bridge/ws-socket-bridge.class';
 import { Config } from './config.interface';
 import { Observable } from 'rxjs';
-import { Action } from '../../../src/shared';
+import { Action } from '~shared/action.interface';
 import { Connection } from './connection.interface';
 
 export class RxSocket implements Bridge {
@@ -19,7 +19,7 @@ export class RxSocket implements Bridge {
   close$: Observable<Connection>;
 
   constructor(options: Config = {}) {
-    this.httpServer = options.server || createSimpleServer(options.serverOpts);
+    this.httpServer = options.server || createSimpleServer(options.port);
     this.socket = options.wsBridge || new WsSocketBridge(this.httpServer, options.wsOpts);
     this.open$ = this.socket.open$;
     this.action$ = this.socket.action$;

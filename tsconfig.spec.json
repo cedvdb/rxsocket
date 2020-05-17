@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./test/dist",                        /* Redirect output structure to the directory. */
+    // "rootDir": "./spec/src",                       /* Specify the root directory of input files. Use to control the output directory structure with --outDir. */
+  },
+  "include": [
+    "./test/**/*.spec.ts"
+  ]
+}

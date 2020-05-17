@@ -1,9 +1,9 @@
 import { Subject } from 'rxjs';
 import WebSocket from 'ws';
 import { Connection } from '../core/connection.interface';
-import { HttpServer } from '../server/http-server.type';
+import { HttpServer } from '../http-server/http-server.type';
 import { Bridge } from './bridge.interface';
-import { Action } from '../../../src/shared';
+import { Action } from '~shared/action.interface';
 
 export class WsSocketBridge implements Bridge {
   private static connectionID = 0;
@@ -19,25 +19,25 @@ export class WsSocketBridge implements Bridge {
 	error$ = this._error$.asObservable();
 	close$ = this._close$.asObservable();
 
-  constructor(server: HttpServer, options: WebSocket.ServerOptions) {
+  constructor(server: HttpServer, options?: WebSocket.ServerOptions) {
     this.wsServer =  new WebSocket.Server({ server, ...options });
     this.addObservables();
   }
 
   private addObservables() {
     this.wsServer.on('connection', (socketConnection) => {
-			// using int instead of uuid 
+			// using int instead of uuid
 			const connectionID = WsSocketBridge.connectionID++ % 2000000000;
-      const connection: Connection = { 
+      const connection: Connection = {
         connectionID,
         dispatch: (action: Action) => socketConnection.send(action)
       };
       socketConnection.on('close', () => this._close$.next(connection));
       socketConnection.on('error', (e) => this._error$.next(e));
       socketConnection.on('message', (msg: string) => {
-        this._action$.next({ 
-          ...JSON.parse(msg), 
-          react: connection.dispatch 
+        this._action$.next({
+          ...JSON.parse(msg),
+          react: connection.dispatch
         });
       });
       this._open$.next(connection);

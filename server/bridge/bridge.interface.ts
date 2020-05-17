@@ -1,11 +1,11 @@
 import { Observable } from 'rxjs';
+import { ActionEvent } from '~shared/action.interface';
 import { Connection } from '../core/connection.interface';
-import { Action } from '~shared/action.interface';
 
 
 export interface Bridge {
   connection$: Observable<Connection>;
-	action$: Observable<Action>;
+	action$: Observable<ActionEvent>;
 	error$: Observable<Error>;
   close$: Observable<Connection>;
 }

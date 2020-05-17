@@ -3,6 +3,7 @@
 import { RxSocket as RxSocketClient } from '../../client';
 import { RxSocket as RxSocketServer } from '../../server';
 import { first, take } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 describe('rx socket', () => {
   const createClient = () => new RxSocketClient({ url: 'ws://localhost:3000'});
@@ -51,6 +52,38 @@ describe('rx socket', () => {
     setTimeout(() => client.dispatch({ type: 'TEST_ACTION', payload: { data: 'first' }}), 100);
     setTimeout(() => client.dispatch({ type: 'TEST_ACTION', payload: { data: 'second' }}), 200);
     setTimeout(() => client.dispatch({ type: 'TEST_ACTION', payload: { data: 'third' }}), 200);
+  });
+
+  it('should receive reaction sent by the server', (done) => {
+    const client = createClient();
+    server.select('TEST_ACTION')
+      .pipe(take(1))
+      .subscribe(({ type, react, payload }) => {
+        react({ type: 'TEST_ACTION_RESPONSE', payload});
+      });
+    client.select('TEST_ACTION_RESPONSE')
+      .pipe(first())
+      .subscribe(({payload}) => {
+        expect(payload).toEqual({ data: 'first' });
+        done();
+      });
+    setTimeout(() => client.dispatch({ type: 'TEST_ACTION', payload: { data: 'first' }}), 100);
+  });
+
+  it('should receive stream of data', (done) => {
+    const client = createClient();
+    server.select('GIVE_STREAM')
+      .pipe(take(1))
+      .subscribe(({ react }) => {
+        of(1, 2, 3).subscribe(i => react({ type: 'STREAM', payload: i}))
+      });
+    setTimeout(() => client.dispatch({ type: 'GIVE_STREAM'}), 100);
+    client.select('STREAM')
+      .pipe(take(3))
+      .subscribe(({ type, payload}) => {
+        if (payload === 3)
+          done();
+      });
   });
 
 })

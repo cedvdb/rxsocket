@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs';
-import { Action } from '~shared/action.interface';
+import { Action, ActionEvent } from '~shared/action.interface';
 import { Bridge } from '../bridge/bridge.interface';
 import { WsBridge } from '../bridge/ws-bridge.class';
 import { filter, map } from 'rxjs/operators';
@@ -9,7 +9,7 @@ export class RxSocket implements Bridge {
   private wsBridge: Bridge;
 
   connection$: Observable<any>;
-	action$: Observable<Action>;
+	action$: Observable<ActionEvent>;
 	error$: Observable<any>;
   close$: Observable<any>;
 
@@ -21,13 +21,13 @@ export class RxSocket implements Bridge {
     this.close$ = this.wsBridge.close$;
   }
 
-  select(type: string): Observable<Action> {
+  select(type: string): Observable<ActionEvent> {
     return this.wsBridge.action$.pipe(
       filter(action => action.type === type),
     );
   }
 
-  dispatch(action: Action): Observable<Action> {
+  dispatch(action: Action): Observable<ActionEvent> {
     this.wsBridge.dispatch(action);
     return this.select(action.type);
   }

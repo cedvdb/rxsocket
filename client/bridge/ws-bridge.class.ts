@@ -1,5 +1,5 @@
 import { Subject } from 'rxjs';
-import { Action } from '~shared/action.interface';
+import { Action, ActionEvent } from '~shared/action.interface';
 import { Bridge } from './bridge.interface';
 import WebSocket from 'ws';
 
@@ -10,7 +10,7 @@ export class WsBridge implements Bridge {
 	private _error$ = new Subject<WebSocket.ErrorEvent>();
   private _close$ = new Subject<WebSocket.CloseEvent>();
   /** message received parsed */
-  private _action$ = new Subject<Action>();
+  private _action$ = new Subject<ActionEvent>();
 
   connection$ = this._connection$.asObservable();
 	action$ = this._action$.asObservable();

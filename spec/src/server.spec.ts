@@ -1,13 +1,12 @@
 
 
+import { first } from 'rxjs/operators';
 import { RxSocket as RxSocketClient } from '../../client';
 import { RxSocket as RxSocketServer } from '../../server';
-import { first, take } from 'rxjs/operators';
-import { of } from 'rxjs';
 
-describe('rx socket', () => {
-  const createClient = () => new RxSocketClient({ url: 'ws://localhost:3000'});
-  const createServer = () => new RxSocketServer();
+describe('Rx Socket Server', () => {
+  const createClient = () => new RxSocketClient({ url: 'ws://localhost:3001'});
+  const createServer = () => new RxSocketServer({ port: 3001 });
 
   const server = createServer();
 

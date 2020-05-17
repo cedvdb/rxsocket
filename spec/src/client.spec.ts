@@ -5,9 +5,9 @@ import { RxSocket as RxSocketServer } from '../../server';
 import { first, take } from 'rxjs/operators';
 import { of } from 'rxjs';
 
-describe('rx socket', () => {
-  const createClient = () => new RxSocketClient({ url: 'ws://localhost:3000'});
-  const createServer = () => new RxSocketServer();
+describe('Rx Socket Client', () => {
+  const createClient = () => new RxSocketClient({ url: 'ws://localhost:3002'});
+  const createServer = () => new RxSocketServer({ port: 3002 });
 
   const server = createServer();
 
@@ -66,6 +66,6 @@ describe('rx socket', () => {
       });
   });
 
-})
+});
 
 

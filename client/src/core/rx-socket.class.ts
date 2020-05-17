@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs';
-import { Action } from '../../../shared';
+import { Action } from '../../../src/shared';
 import { Bridge } from '../bridge/bridge.interface';
 import { WebSocketBridge } from '../bridge/websocket-bridge.class';
 import { filter, map } from 'rxjs/operators';

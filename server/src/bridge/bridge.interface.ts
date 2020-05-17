@@ -1,6 +1,6 @@
 import { Observable } from 'rxjs';
 import { Connection } from '../core/connection.interface';
-import { Action } from '../../../shared';
+import { Action } from '../../../src/shared';
 
 
 export interface Bridge {

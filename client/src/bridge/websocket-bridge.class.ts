@@ -1,5 +1,5 @@
 import { Subject } from 'rxjs';
-import { Action } from '../../../shared';
+import { Action } from '../../../src/shared';
 import { Bridge } from './bridge.interface';
 
 

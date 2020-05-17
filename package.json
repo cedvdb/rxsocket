@@ -1,0 +1,31 @@
+{
+  "name": "rxsocket",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cedvdb/rxsocket.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cedvdb/rxsocket/issues"
+  },
+  "homepage": "https://github.com/cedvdb/rxsocket#readme",
+  "dependencies": {
+    "rxjs": "^6.5.5",
+    "ws": "^7.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "^14.0.1",
+    "@types/ws": "^7.2.4",
+    "jasmine": "^3.5.0"
+  }
+}

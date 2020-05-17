@@ -3,7 +3,7 @@ import WebSocket from 'ws';
 import { Connection } from '../core/connection.interface';
 import { HttpServer } from '../server/http-server.type';
 import { Bridge } from './bridge.interface';
-import { Action } from '../../../shared';
+import { Action } from '../../../src/shared';
 
 export class WsSocketBridge implements Bridge {
   private static connectionID = 0;

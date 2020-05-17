@@ -6,7 +6,7 @@ import { Bridge } from '../bridge/bridge.interface';
 import { WsSocketBridge } from '../bridge/ws-socket-bridge.class';
 import { Config } from './config.interface';
 import { Observable } from 'rxjs';
-import { Action } from '../../../shared';
+import { Action } from '../../../src/shared';
 import { Connection } from './connection.interface';
 
 export class RxSocket implements Bridge {

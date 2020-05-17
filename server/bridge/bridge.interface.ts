@@ -4,7 +4,7 @@ import { Action } from '~shared/action.interface';
 
 
 export interface Bridge {
-  open$: Observable<Connection>;
+  connection$: Observable<Connection>;
 	action$: Observable<Action>;
 	error$: Observable<Error>;
   close$: Observable<Connection>;

@@ -5,16 +5,16 @@ import { HttpServer } from '../http-server/http-server.type';
 import { Bridge } from './bridge.interface';
 import { Action } from '~shared/action.interface';
 
-export class WsSocketBridge implements Bridge {
+export class WsBridge implements Bridge {
   private static connectionID = 0;
   private wsServer: WebSocket.Server;
-	private _open$ = new Subject<Connection>();
+	private _connection$ = new Subject<Connection>();
 	private _error$ = new Subject<Error>();
   private _close$ = new Subject<Connection>();
   /** message received parsed */
   private _action$ = new Subject<Action>();
 
-  open$ = this._open$.asObservable();
+  connection$ = this._connection$.asObservable();
 	action$ = this._action$.asObservable();
 	error$ = this._error$.asObservable();
 	close$ = this._close$.asObservable();
@@ -27,7 +27,7 @@ export class WsSocketBridge implements Bridge {
   private addObservables() {
     this.wsServer.on('connection', (socketConnection) => {
 			// using int instead of uuid
-			const connectionID = WsSocketBridge.connectionID++ % 2000000000;
+			const connectionID = WsBridge.connectionID++ % 2000000000;
       const connection: Connection = {
         connectionID,
         dispatch: (action: Action) => socketConnection.send(action)
@@ -40,7 +40,7 @@ export class WsSocketBridge implements Bridge {
           react: connection.dispatch
         });
       });
-      this._open$.next(connection);
+      this._connection$.next(connection);
     });
   }
 

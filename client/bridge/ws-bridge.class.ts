@@ -43,4 +43,12 @@ export class WsBridge implements Bridge {
 
   }
 
+  dispatch(action: Action) {
+    this.socket.send(JSON.stringify(action));
+  }
+
+  close() {
+    this.socket.close();
+  }
+
 }

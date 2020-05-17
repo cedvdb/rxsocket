@@ -28,6 +28,11 @@ export class RxSocket implements Bridge {
   }
 
   dispatch(action: Action): Observable<Action> {
+    this.wsBridge.dispatch(action);
     return this.select(action.type);
+  }
+
+  close() {
+    this.wsBridge.close();
   }
 }

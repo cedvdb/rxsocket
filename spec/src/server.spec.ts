@@ -9,26 +9,43 @@ describe('Rx Socket Server', () => {
   const createServer = () => new RxSocketServer({ port: 3001 });
 
   const server = createServer();
+  let client: RxSocketClient;
+
+  beforeEach(() => {
+    client = createClient();
+  });
 
   it('should emit connection', (done) => {
     server.connection$.pipe(first()).subscribe(_ => done());
-    createClient();
   });
 
   it('should emit close', (done) => {
-    server.close$.pipe(first()).subscribe(_ => done());
-    const client = createClient();
     setTimeout(() => client.close(), 100);
+    server.close$.pipe(first()).subscribe(_ => done());
   });
 
-  it('should be able to react', (done) => {
-    const client = createClient();
-    setTimeout(() => client.dispatch({ type: 'HELLO' }), 100);
-    server.select('HELLO').pipe(first())
-      .subscribe(({ react }) => react({ type: 'WASSUP' }));
-    client.select('WASSUP').pipe(first())
-      .subscribe(({react}) => react({ type: 'NOT_MUCH'}));
-    server.select('NOT_MUCH').pipe(first())
+  it('should emit received', (done) => {
+    client.dispatch({ type: 'A' });
+    server.received$.pipe(first()).subscribe(_ => done());
+  });
+
+  it('should emit dispatched', (done) => {
+    client.dispatch({ type: 'A' });
+    server.dispatched$.pipe(first()).subscribe(_ => done());
+    server.select('A')
+      .pipe(first())
+      .subscribe(({ dispatch }) => dispatch({ type: 'C' }));
+  });
+
+  it('should be able to do a dispatch roundtrip', (done) => {
+    client.dispatch({ type: 'A' });
+    server.select('A')
+      .pipe(first())
+      .subscribe(({ dispatch }) => dispatch({ type: 'B' }));
+    client.select('B')
+      .pipe(first())
+      .subscribe(({ dispatch }) => dispatch({ type: 'C'}));
+    server.select('C').pipe(first())
       .subscribe(_ => done());
   });
 

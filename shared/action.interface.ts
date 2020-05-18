@@ -5,5 +5,5 @@ export interface Action<T = any> {
 }
 
 export interface ActionEvent<T = any> extends Action<T> {
-  react: (action: Action) => void;
+  dispatch: (action: Action) => void;
 }

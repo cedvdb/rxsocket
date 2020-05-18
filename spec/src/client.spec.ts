@@ -16,10 +16,14 @@ describe('Rx Socket Client', () => {
     client.connection$.pipe(first()).subscribe(_ => done());
   });
 
-  it('it should emit close', (done) => {
+  it('should emit close', (done) => {
     const client = createClient();
     client.close$.pipe(first()).subscribe(_ => done());
     client.close();
+  });
+
+  it('should emit action', (done) => {
+    // TODO
   });
 
   it('it should reconnect on close', (done) => {

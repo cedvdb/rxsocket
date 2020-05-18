@@ -10,25 +10,35 @@ describe('Rx Socket Client', () => {
   const createServer = () => new RxSocketServer({ port: 3002 });
 
   const server = createServer();
+  let client: RxSocketClient;
+
+  beforeEach(() => {
+    client = createClient();
+  });
 
   it('should emit connection', (done) => {
-    const client = createClient();
     client.connection$.pipe(first()).subscribe(_ => done());
   });
 
   it('should emit close', (done) => {
-    const client = createClient();
     client.close$.pipe(first()).subscribe(_ => done());
     client.close();
   });
 
-  it('should emit action', (done) => {
-    // TODO
+  it('should emit dispatched', (done) => {
+    client.dispatched$.pipe(first()).subscribe(_ => done());
+    client.dispatch({ type: 'A' });
+  });
+
+  it('should emit received', (done) => {
+    client.received$.pipe(first()).subscribe(_ => done());
+    client.dispatch({ type: 'A' });
+    server.select('A').pipe(first())
+      .subscribe(({dispatch}) => dispatch({ type: 'B'}))
   });
 
   it('it should reconnect on close', (done) => {
     let i = 0;
-    const client = createClient();
     client.connection$.pipe(take(2)).subscribe(_ => {
       if (i === 1) {
         done();
@@ -38,30 +48,29 @@ describe('Rx Socket Client', () => {
     setTimeout(() => client.close(), 200);
   });
 
-  it('should be able to react', (done) => {
-    const client = createClient();
-    server.select('TEST_ACTION')
+  it('should dispatch round trip', (done) => {
+    setTimeout(() => client.dispatch({ type: 'A' }), 100);
+    server.select('A')
       .pipe(take(1))
-      .subscribe(({ type, dispatch: react, payload }) => {
-        react({ type: 'TEST_ACTION_RESPONSE', payload});
-      });
-    client.select('TEST_ACTION_RESPONSE')
+      .subscribe(({ dispatch }) => dispatch({ type: 'B' }));
+    client.select('B')
+      .pipe(first())
+      .subscribe(({dispatch}) => dispatch({ type: 'C', payload: 'TEST' }));
+    client.select('C')
       .pipe(first())
       .subscribe(({payload}) => {
-        expect(payload).toEqual({ data: 'first' });
+        expect(payload).toEqual('TEST');
         done();
       });
-    setTimeout(() => client.dispatch({ type: 'TEST_ACTION', payload: { data: 'first' }}), 100);
   });
 
   it('should select stream of actions', (done) => {
-    const client = createClient();
+    setTimeout(() => client.dispatch({ type: 'GIVE_STREAM'}), 100);
     server.select('GIVE_STREAM')
       .pipe(take(1))
       .subscribe(({ dispatch: react }) => {
         of(1, 2, 3).subscribe(i => react({ type: 'STREAM', payload: i}))
       });
-    setTimeout(() => client.dispatch({ type: 'GIVE_STREAM'}), 100);
     client.select('STREAM')
       .pipe(take(3))
       .subscribe(({ type, payload}) => {

@@ -11,8 +11,8 @@ export class WsBridge implements Bridge {
 	private _connection$ = new Subject<Connection>();
 	private _error$ = new Subject<Error>();
   private _close$ = new Subject<Connection>();
-  private _action$ = new Subject<ActionEvent>();
-  private _dispatch$ = new Subject<Action>();
+  private _received$ = new Subject<ActionEvent>();
+  private _dispatched$ = new Subject<Action>();
   /** when client connects */
   connection$ = this._connection$.asObservable();
   /** when an error occurs */
@@ -20,9 +20,9 @@ export class WsBridge implements Bridge {
   /** when client closes connection */
   close$ = this._close$.asObservable();
   /** actions received */
-	action$ = this._action$.asObservable();
+	received$ = this._received$.asObservable();
   /** actions sent */
-  dispatch$ = this._dispatch$.asObservable()
+  dispatched$ = this._dispatched$.asObservable()
 
   constructor(server: HttpServer, options?: WebSocket.ServerOptions) {
     this.wsServer =  new WebSocket.Server({ server, ...options });
@@ -37,13 +37,13 @@ export class WsBridge implements Bridge {
         connectionID,
         dispatch: (action: Action) => {
           socketConnection.send(JSON.stringify(action));
-          this._dispatch$.next(action);
+          this._dispatched$.next(action);
         }
       };
       socketConnection.on('close', () => this._close$.next(connection));
       socketConnection.on('error', (e) => this._error$.next(e));
       socketConnection.on('message', (msg: string) => {
-        this._action$.next({
+        this._received$.next({
           ...JSON.parse(msg),
           dispatch: connection.dispatch
         });

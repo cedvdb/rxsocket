@@ -20,18 +20,18 @@ export class RxSocket implements Bridge {
   /** when an error occurs */
 	error$: Observable<Error>;
   /** actions received */
-	action$: Observable<ActionEvent>;
+	received$: Observable<ActionEvent>;
   /** actions sent */
-  dispatch$: Observable<Action>;
+  dispatched$: Observable<Action>;
 
   constructor(options: Config = {}) {
     this.httpServer = options.server || createSimpleServer(options.port);
     this.socket = options.wsBridge || new WsBridge(this.httpServer, options.wsOpts);
     this.connection$ = this.socket.connection$;
-    this.action$ = this.socket.action$;
+    this.received$ = this.socket.received$;
     this.error$ = this.socket.error$;
     this.close$ = this.socket.close$;
-    this.dispatch$ = this.socket.dispatch$
+    this.dispatched$ = this.socket.dispatched$
   }
 
   /**
@@ -40,7 +40,7 @@ export class RxSocket implements Bridge {
    */
   select(type: string): Observable<ActionEvent> {
     log.info(`${type} selected`);
-    return this.action$.pipe(
+    return this.received$.pipe(
       filter(event => event.type === type),
     );
   }

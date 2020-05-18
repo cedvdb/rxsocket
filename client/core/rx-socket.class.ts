@@ -9,22 +9,22 @@ export class RxSocket implements Bridge {
   private wsBridge: Bridge;
 
   connection$: Observable<any>;
-	action$: Observable<ActionEvent>;
+	received$: Observable<ActionEvent>;
 	error$: Observable<any>;
   close$: Observable<any>;
-  dispatch$: Observable<Action>;
+  dispatched$: Observable<Action>;
 
   constructor(options: Config) {
     this.wsBridge = options.wsBridge || new WsBridge(options.url);
     this.connection$ = this.wsBridge.connection$;
-    this.action$ = this.wsBridge.action$;
+    this.received$ = this.wsBridge.received$;
     this.error$ = this.wsBridge.error$;
     this.close$ = this.wsBridge.close$;
-    this.dispatch$ = this.wsBridge.dispatch$;
+    this.dispatched$ = this.wsBridge.dispatched$;
   }
 
   select(type: string): Observable<ActionEvent> {
-    return this.wsBridge.action$.pipe(
+    return this.wsBridge.received$.pipe(
       filter(action => action.type === type),
     );
   }

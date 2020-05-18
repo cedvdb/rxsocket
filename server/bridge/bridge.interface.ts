@@ -5,8 +5,10 @@ import { Connection } from '../core/connection.interface';
 
 export interface Bridge {
   connection$: Observable<Connection>;
-	action$: Observable<ActionEvent>;
 	error$: Observable<Error>;
   close$: Observable<Connection>;
-  dispatch$: Observable<Action>;
+  /** action received */
+	received$: Observable<ActionEvent>;
+  /** action dispatched */
+  dispatched$: Observable<Action>;
 }

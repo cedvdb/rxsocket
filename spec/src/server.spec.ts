@@ -15,7 +15,6 @@ describe('Rx Socket Server', () => {
     client = createClient();
   });
 
-
   it('should emit connection', (done) => {
     server.connection$.pipe(first()).subscribe(_ => done());
   });
@@ -39,13 +38,13 @@ describe('Rx Socket Server', () => {
   });
 
   it('should be able to do a dispatch roundtrip', (done) => {
-    setTimeout(() => client.dispatch({ type: 'A' }), 100);
+    client.dispatch({ type: 'A' });
     server.select('A')
       .pipe(first())
       .subscribe(({ dispatch }) => dispatch({ type: 'B' }));
     client.select('B')
       .pipe(first())
-      .subscribe(({dispatch}) => dispatch({ type: 'C'}));
+      .subscribe(({ dispatch }) => dispatch({ type: 'C'}));
     server.select('C').pipe(first())
       .subscribe(_ => done());
   });

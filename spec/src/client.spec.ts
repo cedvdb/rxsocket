@@ -31,10 +31,10 @@ describe('Rx Socket Client', () => {
   });
 
   it('should emit received', (done) => {
-    client.received$.pipe(first()).subscribe(_ => done());
     client.dispatch({ type: 'A' });
     server.select('A').pipe(first())
       .subscribe(({dispatch}) => dispatch({ type: 'B'}))
+    client.received$.pipe(first()).subscribe(_ => done());
   });
 
   it('it should reconnect on close', (done) => {
@@ -48,8 +48,8 @@ describe('Rx Socket Client', () => {
     setTimeout(() => client.close(), 200);
   });
 
-  it('should dispatch round trip', (done) => {
-    setTimeout(() => client.dispatch({ type: 'A' }), 100);
+  it('should be able to do a dispatch round trip', (done) => {
+    client.dispatch({ type: 'A' });
     server.select('A')
       .pipe(take(1))
       .subscribe(({ dispatch }) => dispatch({ type: 'B' }));
@@ -65,7 +65,7 @@ describe('Rx Socket Client', () => {
   });
 
   it('should select stream of actions', (done) => {
-    setTimeout(() => client.dispatch({ type: 'GIVE_STREAM'}), 100);
+    client.dispatch({ type: 'GIVE_STREAM'});
     server.select('GIVE_STREAM')
       .pipe(take(1))
       .subscribe(({ dispatch: react }) => {

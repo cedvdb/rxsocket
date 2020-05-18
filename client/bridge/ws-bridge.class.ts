@@ -1,11 +1,11 @@
-import { Subject, Observable } from 'rxjs';
+import { Subject } from 'rxjs';
+import WebSocket from 'ws';
 import { Action, ActionEvent } from '~shared/action.interface';
 import { Bridge } from './bridge.interface';
-import WebSocket from 'ws';
 
 export class WsBridge implements Bridge {
   private socket!: WebSocket;
-  private timeout = 100;
+  private timeout = 50;
   private _connection$ = new Subject<WebSocket.OpenEvent>();
 	private _error$ = new Subject<WebSocket.ErrorEvent>();
   private _close$ = new Subject<WebSocket.CloseEvent>();
@@ -45,8 +45,13 @@ export class WsBridge implements Bridge {
   }
 
   dispatch(action: Action) {
-    this.socket.send(JSON.stringify(action));
-    this._dispatched$.next(action);
+    if (this.socket.readyState === 1) {
+      this.socket.send(JSON.stringify(action));
+      this._dispatched$.next(action);
+    } else {
+      this.timeout = Math.min(this.timeout * 2, 10000);
+      setTimeout(() => this.dispatch(action), this.timeout)
+    }
   }
 
   close() {

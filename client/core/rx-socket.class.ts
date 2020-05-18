@@ -1,12 +1,14 @@
 import { Observable } from 'rxjs';
+import { filter } from 'rxjs/operators';
 import { Action, ActionEvent } from '~shared/action.interface';
 import { Bridge } from '../bridge/bridge.interface';
 import { WsBridge } from '../bridge/ws-bridge.class';
-import { filter, map } from 'rxjs/operators';
 import { Config } from './config.interface';
+import { Route } from '~shared/route.interface';
 
 export class RxSocket implements Bridge {
   private wsBridge: Bridge;
+  private routes: Route[] = [];
 
   connection$: Observable<any>;
 	received$: Observable<ActionEvent>;
@@ -29,12 +31,31 @@ export class RxSocket implements Bridge {
     );
   }
 
-  dispatch(action: Action): Observable<ActionEvent> {
+
+  /**
+   * To listen to specific action type,
+   * the difference with select is that this will
+   * log a table of all the routes selected when called
+   * and will subscribe automatically.
+   * @param routes all the type with their handler
+   */
+  route(routes: Route[]): RxSocket {
+    routes.forEach(route => {
+      // not using this.select because we don't need the log
+      this.received$.pipe(
+        filter(({ type }) => type === route.type),
+      ).subscribe(actionEvent => route.handler(actionEvent));
+      this.routes.push(route);
+    });
+		return this;
+	}
+
+  dispatch(action: Action): RxSocket {
     this.wsBridge.dispatch(action);
-    return this.select(action.type);
+    return this;
   }
 
-  close() {
+  close(): void {
     this.wsBridge.close();
   }
 }

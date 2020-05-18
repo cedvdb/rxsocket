@@ -1,18 +1,20 @@
 
+import log from 'loglevel';
 import { Observable } from 'rxjs';
-import { filter, tap } from 'rxjs/operators';
-import { ActionEvent, Action } from '~shared/action.interface';
+import { filter } from 'rxjs/operators';
+import { Action, ActionEvent } from '~shared/action.interface';
+import { Route } from '~shared/route.interface';
 import { Bridge } from '../bridge/bridge.interface';
 import { WsBridge } from '../bridge/ws-bridge.class';
 import { HttpServer } from '../http-server/http-server.type';
 import { createSimpleServer } from '../http-server/server';
 import { Config } from './config.interface';
 import { Connection } from './connection.interface';
-import log from 'loglevel';
 
 export class RxSocket implements Bridge {
   private socket: Bridge;
   private httpServer: HttpServer;
+  private routes: Route[] = [];
   /** when client connects */
   connection$: Observable<Connection>;
   /** when client closes connection */
@@ -45,16 +47,21 @@ export class RxSocket implements Bridge {
     );
   }
 
-  // addRoutes(routes: Route[]): Socket{
-  //   routes.forEach(route => {
-  //     this.action$.pipe(
-  //       filter(event => event.type === route.type),
-  //     ).subscribe();
-  //     this.routes.push({ route, subscription });
-  //   });
-	// 	if(routerConfig)
-	// 		this.router = new Router(this.eventHandler, routerConfig);
-	// 	setTimeout(_ => Printer.printRoutes(routerConfig), 110);
-	// 	return this;
-	// }
+  /**
+   * To listen to specific action type,
+   * the difference with select is that this will
+   * log a table of all the routes selected when called
+   * and will subscribe automatically.
+   * @param routes all the type with their handler
+   */
+  route(routes: Route[]): RxSocket {
+    routes.forEach(route => {
+      // not using this.select because we don't need the log
+      this.received$.pipe(
+        filter(({ type }) => type === route.type),
+      ).subscribe(actionEvent => route.handler(actionEvent));
+      this.routes.push(route);
+    });
+		return this;
+	}
 }

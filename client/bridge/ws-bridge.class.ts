@@ -1,4 +1,4 @@
-import { Subject } from 'rxjs';
+import { Subject, Observable } from 'rxjs';
 import { Action, ActionEvent } from '~shared/action.interface';
 import { Bridge } from './bridge.interface';
 import WebSocket from 'ws';
@@ -11,11 +11,14 @@ export class WsBridge implements Bridge {
   private _close$ = new Subject<WebSocket.CloseEvent>();
   /** message received parsed */
   private _action$ = new Subject<ActionEvent>();
+  /** message sent parsed */
+  private _dispatch$ = new Subject<Action>();
 
   connection$ = this._connection$.asObservable();
 	action$ = this._action$.asObservable();
 	error$ = this._error$.asObservable();
 	close$ = this._close$.asObservable();
+  dispatch$ = this._dispatch$.asObservable();
 
   constructor(private url: string) {
     this.connect();
@@ -32,7 +35,7 @@ export class WsBridge implements Bridge {
     this.socket.onmessage = event => {
       const actionItem = {
         ...JSON.parse(event.data.toString()),
-        react: (action: Action) => this.socket.send(JSON.stringify(action))
+        dipsatch: (action: Action) => this.dispatch(action)
       };
       this._action$.next(actionItem);
     }
@@ -45,6 +48,7 @@ export class WsBridge implements Bridge {
 
   dispatch(action: Action) {
     this.socket.send(JSON.stringify(action));
+    this._dispatch$.next(action);
   }
 
   close() {

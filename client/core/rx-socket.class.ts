@@ -12,6 +12,7 @@ export class RxSocket implements Bridge {
 	action$: Observable<ActionEvent>;
 	error$: Observable<any>;
   close$: Observable<any>;
+  dispatch$: Observable<Action>;
 
   constructor(options: Config) {
     this.wsBridge = options.wsBridge || new WsBridge(options.url);
@@ -19,6 +20,7 @@ export class RxSocket implements Bridge {
     this.action$ = this.wsBridge.action$;
     this.error$ = this.wsBridge.error$;
     this.close$ = this.wsBridge.close$;
+    this.dispatch$ = this.wsBridge.dispatch$;
   }
 
   select(type: string): Observable<ActionEvent> {

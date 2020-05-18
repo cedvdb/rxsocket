@@ -1,7 +1,7 @@
 
 import { Observable } from 'rxjs';
 import { filter, tap } from 'rxjs/operators';
-import { ActionEvent } from '~shared/action.interface';
+import { ActionEvent, Action } from '~shared/action.interface';
 import { Bridge } from '../bridge/bridge.interface';
 import { WsBridge } from '../bridge/ws-bridge.class';
 import { HttpServer } from '../http-server/http-server.type';
@@ -13,12 +13,16 @@ import log from 'loglevel';
 export class RxSocket implements Bridge {
   private socket: Bridge;
   private httpServer: HttpServer;
-  private selectedRoutes = new Set<string>();
-  private connections: any;
+  /** when client connects */
   connection$: Observable<Connection>;
-	action$: Observable<ActionEvent>;
-	error$: Observable<Error>;
+  /** when client closes connection */
   close$: Observable<Connection>;
+  /** when an error occurs */
+	error$: Observable<Error>;
+  /** actions received */
+	action$: Observable<ActionEvent>;
+  /** actions sent */
+  dispatch$: Observable<Action>;
 
   constructor(options: Config = {}) {
     this.httpServer = options.server || createSimpleServer(options.port);
@@ -27,8 +31,13 @@ export class RxSocket implements Bridge {
     this.action$ = this.socket.action$;
     this.error$ = this.socket.error$;
     this.close$ = this.socket.close$;
+    this.dispatch$ = this.socket.dispatch$
   }
 
+  /**
+   * To listen to specific action type
+   * @param type action type you want to select
+   */
   select(type: string): Observable<ActionEvent> {
     log.info(`${type} selected`);
     return this.action$.pipe(
@@ -36,16 +45,16 @@ export class RxSocket implements Bridge {
     );
   }
 
-  addRoutes(routes: Route[]): Socket{
-    routes.forEach(route => {
-      this.action$.pipe(
-        filter(event => event.type === route.type),
-      ).subscribe();
-      this.routes.push({ route, subscription });  
-    });
-		if(routerConfig)
-			this.router = new Router(this.eventHandler, routerConfig);
-		setTimeout(_ => Printer.printRoutes(routerConfig), 110);
-		return this;
-	}
+  // addRoutes(routes: Route[]): Socket{
+  //   routes.forEach(route => {
+  //     this.action$.pipe(
+  //       filter(event => event.type === route.type),
+  //     ).subscribe();
+  //     this.routes.push({ route, subscription });
+  //   });
+	// 	if(routerConfig)
+	// 		this.router = new Router(this.eventHandler, routerConfig);
+	// 	setTimeout(_ => Printer.printRoutes(routerConfig), 110);
+	// 	return this;
+	// }
 }

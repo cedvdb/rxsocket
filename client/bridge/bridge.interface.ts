@@ -7,6 +7,7 @@ export interface Bridge {
 	error$: Observable<any>;
   close$: Observable<any>;
   action$: Observable<ActionEvent>;
+  dispatch$: Observable<Action>;
   close: () => void;
   dispatch: (action: Action) => any;
 }

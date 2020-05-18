@@ -42,7 +42,7 @@ describe('Rx Socket Client', () => {
     const client = createClient();
     server.select('TEST_ACTION')
       .pipe(take(1))
-      .subscribe(({ type, react, payload }) => {
+      .subscribe(({ type, dispatch: react, payload }) => {
         react({ type: 'TEST_ACTION_RESPONSE', payload});
       });
     client.select('TEST_ACTION_RESPONSE')
@@ -58,7 +58,7 @@ describe('Rx Socket Client', () => {
     const client = createClient();
     server.select('GIVE_STREAM')
       .pipe(take(1))
-      .subscribe(({ react }) => {
+      .subscribe(({ dispatch: react }) => {
         of(1, 2, 3).subscribe(i => react({ type: 'STREAM', payload: i}))
       });
     setTimeout(() => client.dispatch({ type: 'GIVE_STREAM'}), 100);

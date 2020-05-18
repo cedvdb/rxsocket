@@ -25,9 +25,9 @@ describe('Rx Socket Server', () => {
     const client = createClient();
     setTimeout(() => client.dispatch({ type: 'HELLO' }), 100);
     server.select('HELLO').pipe(first())
-      .subscribe(({ react }) => react({ type: 'WASSUP' }));
+      .subscribe(({ dispatch: react }) => react({ type: 'WASSUP' }));
     client.select('WASSUP').pipe(first())
-      .subscribe(({react}) => react({ type: 'NOT_MUCH'}));
+      .subscribe(({dispatch: react}) => react({ type: 'NOT_MUCH'}));
     server.select('NOT_MUCH').pipe(first())
       .subscribe(_ => done());
   });

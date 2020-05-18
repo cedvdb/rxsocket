@@ -31,11 +31,11 @@ export class WsBridge implements Bridge {
       this._close$.next(event);
     };
     this.socket.onmessage = event => {
-      const actionItem = {
-        ...JSON.parse(event.data.toString()),
-        dipsatch: (action: Action) => this.dispatch(action)
+      const actionEvent = {
+        ...JSON.parse(event.data.toString()) as Action,
+        dispatch: (action: Action) => this.dispatch(action)
       };
-      this._received$.next(actionItem);
+      this._received$.next(actionEvent);
     }
     this.socket.onerror = event => {
       this._error$.next(event);
@@ -44,7 +44,7 @@ export class WsBridge implements Bridge {
 
   }
 
-  dispatch(action: Action) {
+  dispatch(action: Action): void {
     if (this.socket.readyState === 1) {
       this.socket.send(JSON.stringify(action));
       this._dispatched$.next(action);

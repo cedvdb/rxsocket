@@ -31,23 +31,21 @@ export class WsBridge implements Bridge {
 
   private addObservables() {
     this.wsServer.on('connection', (socketConnection) => {
-			// using int instead of uuid
-			const connectionID = WsBridge.connectionID++ % 2000000000;
-      const connection: Connection = {
-        connectionID,
-        dispatch: (action: Action) => {
-          socketConnection.send(JSON.stringify(action));
-          this._dispatched$.next(action);
-        }
+
+      const dispatch = (action: Action) => {
+        socketConnection.send(JSON.stringify(action));
+        this._dispatched$.next(action);
       };
+      // using int instead of uuid
+      const connectionID = WsBridge.connectionID++ % 2000000000;
+      const connection: Connection = { connectionID, dispatch };
+
       socketConnection.on('close', () => this._close$.next(connection));
       socketConnection.on('error', (e) => this._error$.next(e));
       socketConnection.on('message', (msg: string) => {
-        this._received$.next({
-          ...JSON.parse(msg),
-          dispatch: connection.dispatch
-        });
+        this._received$.next({ ...JSON.parse(msg), dispatch });
       });
+
       this._connection$.next(connection);
     });
   }

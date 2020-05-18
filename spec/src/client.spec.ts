@@ -49,16 +49,16 @@ describe('Rx Socket Client', () => {
   });
 
   it('should be able to do a dispatch round trip', (done) => {
-    client.dispatch({ type: 'A' });
+    client.dispatch({ type: 'A', payload: 'TEST' });
     server.select('A')
       .pipe(take(1))
-      .subscribe(({ dispatch }) => dispatch({ type: 'B' }));
+      .subscribe(({ dispatch, payload }) => dispatch({ type: 'B', payload }));
     client.select('B')
       .pipe(first())
-      .subscribe(({dispatch}) => dispatch({ type: 'C', payload: 'TEST' }));
-    client.select('C')
+      .subscribe(({ dispatch, payload }) => dispatch({ type: 'C', payload }));
+    server.select('C')
       .pipe(first())
-      .subscribe(({payload}) => {
+      .subscribe(({ payload }) => {
         expect(payload).toEqual('TEST');
         done();
       });
@@ -76,6 +76,32 @@ describe('Rx Socket Client', () => {
       .subscribe(({ type, payload}) => {
         if (payload === 3)
           done();
+      });
+  });
+
+  it('should handle routing', (done) => {
+    let i = 0
+
+    const checkDone = (actionEvent: any) => {
+      if (!!actionEvent)
+        i++;
+      if (i === 3)
+        done();
+    }
+
+    client.route([
+      { type: 'A', handler: checkDone },
+      { type: 'B', handler: checkDone },
+      { type: 'C', handler: checkDone },
+    ]);
+
+    client.dispatch({ type: 'TEST' });
+    server.select('TEST')
+      .pipe(first())
+      .subscribe(({dispatch}) => {
+        dispatch({ type: 'A' });
+        dispatch({ type: 'B' });
+        dispatch({ type: 'C' });
       });
   });
 

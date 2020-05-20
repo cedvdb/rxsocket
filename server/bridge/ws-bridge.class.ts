@@ -36,8 +36,8 @@ export class WsBridge implements Bridge {
         socketConnection.send(JSON.stringify(action));
         this._dispatched$.next(action);
       };
-      // using int instead of uuid
-      const connectionID = WsBridge.connectionID++ % 2000000000;
+      // not using uuid for this
+      const connectionID = WsBridge.connectionID++ % Number.MAX_SAFE_INTEGER;
       const connection: Connection = { connectionID, dispatch };
 
       socketConnection.on('close', () => this._close$.next(connection));

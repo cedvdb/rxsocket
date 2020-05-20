@@ -1,6 +1,7 @@
 import { Bridge } from '../bridge/bridge.interface';
 import { log, LogLevel, prettyNode } from 'simply-logs';
 import { Route } from '~shared/route.interface';
+import { HttpServer } from 'server/http-server/http-server.type';
 
 log.transformFn = prettyNode;
 
@@ -27,11 +28,11 @@ export class Printer {
 		log.info(`${startRocket}    ${info}${endRocket}`);
 	}
 
-  static printEvents(bridge: Bridge) {
+  static printEvents(bridge: Bridge, server: HttpServer) {
     bridge.connection$
-      .subscribe(connection => log.info(`connection  #${connection.connectionID}, x concurrent connections`));
+      .subscribe(connection => log.info(`connection  #${connection.connectionID}, ${server.listenerCount('message')} concurrent connections`));
     bridge.close$
-      .subscribe(connection => log.info(`closing connection #${connection.connectionID}, x concurrent connections`));
+      .subscribe(connection => log.info(`closing connection #${connection.connectionID},  ${server.listenerCount('message')} concurrent connections`));
     bridge.error$
       .subscribe(error => log.error(error));
     bridge.received$

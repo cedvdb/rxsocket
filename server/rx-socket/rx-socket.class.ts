@@ -37,7 +37,7 @@ export class RxSocket implements Bridge {
     this.error$ = this.socket.error$;
     this.close$ = this.socket.close$;
     this.dispatched$ = this.socket.dispatched$
-    Printer.printEvents(this);
+    Printer.printEvents(this, this.httpServer);
   }
 
   /**

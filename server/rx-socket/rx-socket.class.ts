@@ -10,7 +10,7 @@ import { HttpServer } from '../http-server/http-server.type';
 import { createSimpleServer } from '../http-server/server';
 import { Config } from './config.interface';
 import { Connection } from './connection.interface';
-import { Printer } from 'server/utils/printer.class';
+import { Printer } from '../utils/printer.class';
 
 export class RxSocket implements Bridge {
   private socket: Bridge;

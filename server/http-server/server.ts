@@ -5,8 +5,6 @@ const DEFAULT_PORT = 3000;
 
 export function createSimpleServer(port = DEFAULT_PORT): HttpServer {
   const server = http.createServer();
-  server.listen(port, () => {
-    console.log(`Websocket  listening on ${port}`);
-  });
+  server.listen(port);
   return server;
 }

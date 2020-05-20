@@ -1,7 +1,8 @@
 import { Bridge } from '../bridge/bridge.interface';
-import { log, LogLevel } from 'simply-logs';
+import { log, LogLevel, prettyNode } from 'simply-logs';
 import { Route } from '~shared/route.interface';
 
+log.transformFn = prettyNode;
 
 const startRocket = `
       /\\
@@ -22,8 +23,8 @@ export class Printer {
   }
 
   static printLogo(addres: any){
-		const info = `AR Socket listenning on ${addres}`
-		log.info(`${startRocket}    ${JSON.stringify(info)}${endRocket}`);
+		const info = `AR Socket listenning on ${addres?.port}`
+		log.info(`${startRocket}    ${info}${endRocket}`);
 	}
 
   static printEvents(bridge: Bridge) {

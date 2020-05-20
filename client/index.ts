@@ -1,1 +1,1 @@
-export * from './core/rx-socket.class';
+export * from './rx-socket/rx-socket.class';

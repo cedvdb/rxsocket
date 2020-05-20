@@ -4,17 +4,19 @@ import { Observable } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { Action, ActionEvent } from '~shared/action.interface';
 import { Route } from '~shared/route.interface';
-import { Bridge } from '../bridge/bridge.interface';
+import { IRxSocket } from './rx-socket.interface';
 import { WsBridge } from '../bridge/ws-bridge.class';
 import { HttpServer } from '../http-server/http-server.type';
 import { createSimpleServer } from '../http-server/server';
 import { Config } from './config.interface';
 import { Connection } from './connection.interface';
 import { Printer } from '../utils/printer.class';
+import { UserContainer } from 'server/user-container/user-container';
 
-export class RxSocket implements Bridge {
-  private socket: Bridge;
+export class RxSocket implements IRxSocket {
+  private socket: IRxSocket;
   private httpServer: HttpServer;
+  private userContainer: UserContainer;
   /** when client connects */
   connection$: Observable<Connection>;
   /** when client closes connection */
@@ -37,7 +39,8 @@ export class RxSocket implements Bridge {
     this.error$ = this.socket.error$;
     this.close$ = this.socket.close$;
     this.dispatched$ = this.socket.dispatched$
-    Printer.printEvents(this, this.httpServer);
+    Printer.printEvents(this.socket, this.httpServer);
+    this.userContainer = new UserContainer(this.socket);
   }
 
   /**
@@ -67,6 +70,50 @@ export class RxSocket implements Bridge {
     });
     Printer.printRoutes(routes);
 		return this;
+  }
+
+  /**
+   * Dispatch an action to all clients
+   * @param action action sent
+   * @param roomname if a room name is specified it will send to the client
+   * in that room only
+   * @param omit users to which we don't desire to send the action, for example
+   * we might want to broadcast a message to everyone except the sender
+   */
+  broadcast(action: Action, omit?: Connection[], roomname?: string): RxSocket {
+    const room = roomname === undefined ?
+      this.userContainer.onlineUsers : this.userContainer.rooms.get(roomname);
+
+    if (!room) {
+      log.debug(`broadcasting to room ${roomname} but it doesn't exist. Doing nothing.`);
+      return this;
+    }
+
+    room.forEach(connection => {
+      // if it's not omited we dispatch
+			if (!omit || omit.find(omitedConn => omitedConn.id === connection.id)) {
+				connection.dispatch(action);
+      }
+    });
+
+    return this;
+  }
+
+  /**
+   * Add an user to a room,
+   * will create a room if it doesn't exist
+   * will close room when there is no more connections
+   * @param roomname the roomname
+   * @param conn the connection we want to add
+   */
+  addToRoom(roomname: string, connection: Connection): RxSocket{
+    this.userContainer.addToRoom(roomname, connection);
+    return this;
+  }
+
+  removeFromRoom(roomname: string, connection: Connection): RxSocket{
+    this.userContainer.removeFromRoom(roomname, connection);
+    return this;
   }
 
 }

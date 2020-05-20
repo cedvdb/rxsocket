@@ -1,4 +1,4 @@
-import { Bridge } from '../bridge/bridge.interface';
+import { IRxSocket } from '../rx-socket/rx-socket.interface';
 import { log, LogLevel, prettyNode } from 'simply-logs';
 import { Route } from '~shared/route.interface';
 import { HttpServer } from 'server/http-server/http-server.type';
@@ -28,17 +28,17 @@ export class Printer {
 		log.info(`${startRocket}    ${info}${endRocket}`);
 	}
 
-  static printEvents(bridge: Bridge, server: HttpServer) {
-    bridge.connection$
-      .subscribe(connection => log.info(`connection  #${connection.connectionID}, ${server.listenerCount('message')} concurrent connections`));
-    bridge.close$
-      .subscribe(connection => log.info(`closing connection #${connection.connectionID},  ${server.listenerCount('message')} concurrent connections`));
-    bridge.error$
+  static printEvents(socket: IRxSocket, server: HttpServer) {
+    socket.connection$
+      .subscribe(connection => log.info(`connection  #${connection.id}, ${server.listenerCount('message')} concurrent connections`));
+    socket.close$
+      .subscribe(connection => log.info(`closing connection #${connection.id},  ${server.listenerCount('message')} concurrent connections`));
+    socket.error$
       .subscribe(error => log.error(error));
-    bridge.received$
+    socket.received$
       .subscribe(action => log.info(`\x1b[33m Action ${ action.type } received, payload:
         ${ JSON.stringify(action.payload) }`));
-    bridge.dispatched$
+    socket.dispatched$
       .subscribe(action => log.info(`\x1b[36m Action ${ action.type } dispatched, payload:
         ${ JSON.stringify(action.payload) }`));
   }

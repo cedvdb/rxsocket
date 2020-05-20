@@ -1,9 +1,9 @@
 import { Observable } from 'rxjs';
 import { ActionEvent, Action } from '~shared/action.interface';
-import { Connection } from '../rx-socket/connection.interface';
+import { Connection } from './connection.interface';
 
 
-export interface Bridge {
+export interface IRxSocket {
   connection$: Observable<Connection>;
 	error$: Observable<Error>;
   close$: Observable<Connection>;

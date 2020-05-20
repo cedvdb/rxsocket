@@ -11,12 +11,12 @@ import { createSimpleServer } from '../http-server/server';
 import { Config } from './config.interface';
 import { Connection } from './connection.interface';
 import { Printer } from '../utils/printer.class';
-import { UserContainer } from 'server/user-container/user-container';
+import { RoomContainer } from 'server/room-container/room-container';
 
 export class RxSocket implements IRxSocket {
   private socket: IRxSocket;
   private httpServer: HttpServer;
-  private userContainer: UserContainer;
+  private userContainer: RoomContainer;
   /** when client connects */
   connection$: Observable<Connection>;
   /** when client closes connection */
@@ -40,7 +40,7 @@ export class RxSocket implements IRxSocket {
     this.close$ = this.socket.close$;
     this.dispatched$ = this.socket.dispatched$
     Printer.printEvents(this.socket, this.httpServer);
-    this.userContainer = new UserContainer(this.socket);
+    this.userContainer = new RoomContainer(this.socket);
   }
 
   /**

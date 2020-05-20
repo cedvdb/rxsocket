@@ -18,6 +18,7 @@ A dead easy reactive websocket framework.
  - Symetric API on client and server
  - Broadcast
  - Room system
+ - Tested
 
 # Architecture
 

@@ -1,10 +1,8 @@
 
+import { RxSocket as RxSocketClient } from '../../../client';
+import { RxSocket as RxSocketServer } from '../../../server';
 
-import { first } from 'rxjs/operators';
-import { RxSocket as RxSocketClient } from '../../client';
-import { RxSocket as RxSocketServer } from '../../server';
-
-describe('Rx Socket Server', () => {
+describe('Rx Socket Server - event emition', () => {
   const createClient = () => new RxSocketClient({ url: 'ws://localhost:3001'});
   const createServer = () => new RxSocketServer({ port: 3001 });
 

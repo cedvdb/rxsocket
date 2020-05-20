@@ -10,11 +10,11 @@ import { HttpServer } from '../http-server/http-server.type';
 import { createSimpleServer } from '../http-server/server';
 import { Config } from './config.interface';
 import { Connection } from './connection.interface';
+import { Printer } from 'server/utils/printer.class';
 
 export class RxSocket implements Bridge {
   private socket: Bridge;
   private httpServer: HttpServer;
-  private routes: Route[] = [];
   /** when client connects */
   connection$: Observable<Connection>;
   /** when client closes connection */
@@ -29,11 +29,15 @@ export class RxSocket implements Bridge {
   constructor(options: Config = {}) {
     this.httpServer = options.server || createSimpleServer(options.port);
     this.socket = options.wsBridge || new WsBridge(this.httpServer, options.wsOpts);
+    Printer.printEnv();
+    Printer.printLogo(this.httpServer.address());
+    // exposing those directly on rxsocket
     this.connection$ = this.socket.connection$;
     this.received$ = this.socket.received$;
     this.error$ = this.socket.error$;
     this.close$ = this.socket.close$;
     this.dispatched$ = this.socket.dispatched$
+    Printer.printEvents(this);
   }
 
   /**
@@ -60,8 +64,9 @@ export class RxSocket implements Bridge {
       this.received$.pipe(
         filter(({ type }) => type === route.type),
       ).subscribe(actionEvent => route.handler(actionEvent));
-      this.routes.push(route);
     });
+    Printer.printRoutes(routes);
 		return this;
-	}
+  }
+
 }

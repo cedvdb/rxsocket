@@ -22,10 +22,8 @@
   },
   "homepage": "https://github.com/cedvdb/rxsocket#readme",
   "dependencies": {
-    "chalk": "^4.0.0",
-    "loglevel": "^1.6.8",
-    "loglevel-plugin-prefix": "^0.8.4",
     "rxjs": "^6.5.5",
+    "simply-logs": "0.0.3",
     "ws": "^7.3.0"
   },
   "devDependencies": {

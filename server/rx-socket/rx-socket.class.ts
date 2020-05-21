@@ -8,10 +8,11 @@ import { IRxSocket } from './rx-socket.interface';
 import { WsRxBridge } from '../bridge/ws-rx-bridge.class';
 import { HttpServer } from '../http-server/http-server.type';
 import { createSimpleServer } from '../http-server/server';
-import { Config } from './config.interface';
+import { Config } from './rename.interface';
 import { Connection } from './connection.interface';
 import { Printer } from '../utils/printer.class';
 import { RoomContainer } from 'server/room-container/room-container';
+import { LogLevel } from 'simply-logs';
 
 
 // Api facade
@@ -21,13 +22,10 @@ import { RoomContainer } from 'server/room-container/room-container';
  */
 export class RxSocket implements IRxSocket {
   private socket: IRxSocket;
-  private httpServer: HttpServer;
   private userContainer: RoomContainer;
 
-
-  constructor(options: Config = {}) {
-    this.httpServer = options.server || createSimpleServer(options.port);
-    this.socket = options.wsBridge || new WsRxBridge(this.httpServer, options.wsOpts);
+  constructor(options: Config = { logLevel: LogLevel.DEBUG }) {
+    this.socket = new WsRxBridge(options);
     Printer.printEnv();
     Printer.printLogo(this.httpServer.address());
     Printer.printEvents(this.socket, this.httpServer);

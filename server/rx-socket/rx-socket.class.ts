@@ -2,11 +2,11 @@
 import log from 'loglevel';
 import { Observable } from 'rxjs';
 import { filter } from 'rxjs/operators';
-import { RoomContainer } from 'server/room-container/room-container';
 import { Action, ActionEvent } from '~shared/action.interface';
 import { Route } from '~shared/route.interface';
 import { RxBridge } from '../bridge/rx-bridge.interface';
 import { WsRxBridge } from '../bridge/ws-rx-bridge.class';
+import { RoomContainer } from '../room-container/room-container';
 import { Printer } from '../utils/printer.class';
 import { Connection } from './connection.interface';
 import { Options } from './options.interface';

@@ -1,11 +1,11 @@
 import { Subject, ReplaySubject } from 'rxjs';
 import WebSocket from 'ws';
 import { Connection } from '../rx-socket/connection.interface';
-import { HttpServer } from '../http-server/http-server.type';
-import { IRxSocket } from '../rx-socket/rx-socket.interface';
+import { RxBridge } from './rx-bridge.interface';
 import { Action, ActionEvent } from '~shared/action.interface';
+import { AddressInfo } from 'net';
 
-export class WsBridge implements IRxSocket {
+export class WsRxBridge implements RxBridge {
   private static connectionID = 0;
   private wsServer: WebSocket.Server;
 
@@ -26,8 +26,8 @@ export class WsBridge implements IRxSocket {
   /** actions sent */
   dispatched$ = this._dispatched$.asObservable()
 
-  constructor(server: HttpServer, options?: WebSocket.ServerOptions) {
-    this.wsServer =  new WebSocket.Server({ server, ...options });
+  constructor(options?: WebSocket.ServerOptions) {
+    this.wsServer =  new WebSocket.Server({ ...options });
     this.addObservables();
   }
 
@@ -39,7 +39,7 @@ export class WsBridge implements IRxSocket {
         this._dispatched$.next(action);
       };
       // not using uuid for this
-      const connectionID = WsBridge.connectionID++ % Number.MAX_SAFE_INTEGER;
+      const connectionID = WsRxBridge.connectionID++ % Number.MAX_SAFE_INTEGER;
       const connection: Connection = { id: connectionID, dispatch };
 
       socketConnection.on('close', () => this._close$.next(connection));
@@ -50,6 +50,14 @@ export class WsBridge implements IRxSocket {
 
       this._connection$.next(connection);
     });
+  }
+
+  close() {
+    this.wsServer.close();
+  }
+
+  get address(): AddressInfo | string {
+    return this.wsServer.address();
   }
 
 }

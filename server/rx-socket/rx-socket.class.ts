@@ -2,20 +2,17 @@
 import log from 'loglevel';
 import { Observable } from 'rxjs';
 import { filter } from 'rxjs/operators';
+import { RoomContainer } from 'server/room-container/room-container';
 import { Action, ActionEvent } from '~shared/action.interface';
 import { Route } from '~shared/route.interface';
-import { IRxSocket } from './rx-socket.interface';
-import { WsBridge } from '../bridge/ws-bridge.class';
-import { HttpServer } from '../http-server/http-server.type';
-import { createSimpleServer } from '../http-server/server';
-import { Config } from './config.interface';
-import { Connection } from './connection.interface';
+import { RxBridge } from '../bridge/rx-bridge.interface';
+import { WsRxBridge } from '../bridge/ws-rx-bridge.class';
 import { Printer } from '../utils/printer.class';
-import { RoomContainer } from 'server/room-container/room-container';
+import { Connection } from './connection.interface';
+import { Options } from './options.interface';
 
-export class RxSocket implements IRxSocket {
-  private socket: IRxSocket;
-  private httpServer: HttpServer;
+export class RxSocket {
+  private socket: RxBridge;
   private userContainer: RoomContainer;
   /** when client connects */
   connection$: Observable<Connection>;
@@ -28,18 +25,17 @@ export class RxSocket implements IRxSocket {
   /** actions sent */
   dispatched$: Observable<Action>;
 
-  constructor(options: Config = {}) {
-    this.httpServer = options.server || createSimpleServer(options.port);
-    this.socket = options.wsBridge || new WsBridge(this.httpServer, options.wsOpts);
+  constructor(options?: Options ) {
+    this.socket = new WsRxBridge(options);
     Printer.printEnv();
-    Printer.printLogo(this.httpServer.address());
+    Printer.printLogo(this.socket.address);
     // exposing those directly on rxsocket
     this.connection$ = this.socket.connection$;
     this.received$ = this.socket.received$;
     this.error$ = this.socket.error$;
     this.close$ = this.socket.close$;
     this.dispatched$ = this.socket.dispatched$
-    Printer.printEvents(this.socket, this.httpServer);
+    Printer.printEvents(this.socket);
     this.userContainer = new RoomContainer(this.socket);
   }
 

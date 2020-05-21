@@ -5,7 +5,7 @@ import { filter } from 'rxjs/operators';
 import { Action, ActionEvent } from '~shared/action.interface';
 import { Route } from '~shared/route.interface';
 import { IRxSocket } from './rx-socket.interface';
-import { WsBridge } from '../bridge/ws-bridge.class';
+import { WsRxBridge } from '../bridge/ws-rx-bridge.class';
 import { HttpServer } from '../http-server/http-server.type';
 import { createSimpleServer } from '../http-server/server';
 import { Config } from './config.interface';
@@ -13,32 +13,23 @@ import { Connection } from './connection.interface';
 import { Printer } from '../utils/printer.class';
 import { RoomContainer } from 'server/room-container/room-container';
 
+
+// Api facade
+
+/**
+ *
+ */
 export class RxSocket implements IRxSocket {
   private socket: IRxSocket;
   private httpServer: HttpServer;
   private userContainer: RoomContainer;
-  /** when client connects */
-  connection$: Observable<Connection>;
-  /** when client closes connection */
-  close$: Observable<Connection>;
-  /** when an error occurs */
-	error$: Observable<Error>;
-  /** actions received */
-	received$: Observable<ActionEvent>;
-  /** actions sent */
-  dispatched$: Observable<Action>;
+
 
   constructor(options: Config = {}) {
     this.httpServer = options.server || createSimpleServer(options.port);
-    this.socket = options.wsBridge || new WsBridge(this.httpServer, options.wsOpts);
+    this.socket = options.wsBridge || new WsRxBridge(this.httpServer, options.wsOpts);
     Printer.printEnv();
     Printer.printLogo(this.httpServer.address());
-    // exposing those directly on rxsocket
-    this.connection$ = this.socket.connection$;
-    this.received$ = this.socket.received$;
-    this.error$ = this.socket.error$;
-    this.close$ = this.socket.close$;
-    this.dispatched$ = this.socket.dispatched$
     Printer.printEvents(this.socket, this.httpServer);
     this.userContainer = new RoomContainer(this.socket);
   }
@@ -99,6 +90,11 @@ export class RxSocket implements IRxSocket {
     return this;
   }
 
+
+  ///////////
+  // rooms //
+  ///////////
+
   /**
    * Add an user to a room,
    * will create a room if it doesn't exist
@@ -114,6 +110,33 @@ export class RxSocket implements IRxSocket {
   removeFromRoom(roomname: string, connection: Connection): RxSocket{
     this.userContainer.removeFromRoom(roomname, connection);
     return this;
+  }
+
+  get onlineUsers () { return this.userContainer.onlineUsers; }
+
+  get rooms () { return this.userContainer.rooms; }
+
+  ////////////
+  // events //
+  ////////////
+
+  /** when client connects */
+  get connection$ () { return this.socket.connection$ }
+
+  /** when client closes connection */
+  get close$ () { return this.socket.close$ }
+
+  /** when an error occurs */
+  get error$ () { return this.socket.error$ }
+
+  /** actions received */
+  get received$ () { return this.socket.received$ }
+
+  /** actions sent */
+  get dispatched$ () { return this.socket.dispatched$ }
+
+  close() {
+
   }
 
 }

@@ -5,7 +5,7 @@ import { HttpServer } from '../http-server/http-server.type';
 import { IRxSocket } from '../rx-socket/rx-socket.interface';
 import { Action, ActionEvent } from '~shared/action.interface';
 
-export class WsBridge implements IRxSocket {
+export class WsRxBridge implements IRxSocket {
   private static connectionID = 0;
   private wsServer: WebSocket.Server;
 
@@ -39,7 +39,7 @@ export class WsBridge implements IRxSocket {
         this._dispatched$.next(action);
       };
       // not using uuid for this
-      const connectionID = WsBridge.connectionID++ % Number.MAX_SAFE_INTEGER;
+      const connectionID = WsRxBridge.connectionID++ % Number.MAX_SAFE_INTEGER;
       const connection: Connection = { id: connectionID, dispatch };
 
       socketConnection.on('close', () => this._close$.next(connection));

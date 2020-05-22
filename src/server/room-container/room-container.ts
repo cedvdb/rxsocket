@@ -1,6 +1,6 @@
 import { Action } from '~shared/action.interface';
 import { RxBridge } from '../bridge/rx-bridge.interface';
-import { Connection } from '../rx-socket/connection.interface';
+import { Connection } from '../connection.interface';
 import { log } from '../utils/log';
 
 export class RoomContainer {

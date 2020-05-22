@@ -1,6 +1,6 @@
 import { Subject } from 'rxjs';
 import WebSocket from 'ws';
-import { Connection } from '../rx-socket/connection.interface';
+import { Connection } from '../connection.interface';
 import { RxBridge } from './rx-bridge.interface';
 import { Action, ActionEvent } from '~shared/action.interface';
 import { AddressInfo } from 'net';

@@ -1,14 +1,14 @@
 {
   "name": "@cedvdb/rxsocket",
-  "version": "0.0.3",
+  "version": "0.0.8",
   "description": "RxSocket",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "index.js",
+  "types": "index.d.ts",
   "directories": {
     "test": "test"
   },
   "scripts": {
-    "prepublish": "tsc",
+    "link:publish": "tsc && cp package.json dist && cp README.md dist && cp tsconfig.json dist && cd dist && npm publish",
     "test": "npm run test:build && npm run test:run",
     "test:build": "tsc -p tsconfig.spec.json",
     "test:run": "jasmine JASMINE_CONFIG_PATH==./spec/support/jasmine.json"
@@ -26,12 +26,12 @@
   "dependencies": {
     "rxjs": "^6.5.5",
     "simply-logs": "0.0.3",
-    "ws": "^7.3.0"
+    "ws": "^7.3.0",
+    "@types/ws": "^7.2.4"
   },
   "devDependencies": {
     "@types/jasmine": "^3.5.10",
     "@types/node": "^14.0.1",
-    "@types/ws": "^7.2.4",
     "jasmine": "^3.5.0"
   }
 }

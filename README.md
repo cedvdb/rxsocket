@@ -80,6 +80,25 @@ socket.select('TIME')
 socket.dispatch({ type: 'GET_TIME' })
 ```
 
+### Angular example:
+
+```javascript 
+export class AppComponent implements OnInit {
+  messages$: Observable<any> = rxSocket.select('MESSAGES').pipe(
+    map((action) => action.payload)
+  );
+
+  ngOnInit() {
+    rxSocket.dispatch({ type: 'GET_MESSAGES' });
+  }
+
+  post(content: string) {
+    const message = { content };
+    rxSocket.dispatch({ type: 'POST_MESSAGES', payload: message });
+  }
+}
+```
+
 # Documentation
 
 ### Routing

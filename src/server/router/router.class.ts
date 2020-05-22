@@ -1,7 +1,7 @@
 import { Observable } from 'rxjs';
 import { filter } from 'rxjs/operators';
-import { ActionEvent } from '~shared/action.interface';
-import { Route } from '~shared/route.interface';
+import { ActionEvent } from '../../shared/action.interface';
+import { Route } from '../../shared/route.interface';
 import { log } from '../utils/log';
 import { Printer } from '../utils/printer.class';
 

@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs';
-import { ActionEvent, Action } from '~shared/action.interface';
+import { ActionEvent, Action } from '../../shared/action.interface';
 import { Connection } from '../connection.interface';
 import { AddressInfo } from 'net';
 

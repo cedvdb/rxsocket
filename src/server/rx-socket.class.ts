@@ -2,8 +2,8 @@
 import { Observable } from 'rxjs';
 import { Router } from './router/router.class';
 import { LogLevel } from 'simply-logs';
-import { Action, ActionEvent } from '~shared/action.interface';
-import { Route } from '~shared/route.interface';
+import { Action, ActionEvent } from '../shared/action.interface';
+import { Route } from '../shared/route.interface';
 import { RxBridge } from './bridge/rx-bridge.interface';
 import { WsRxBridge } from './bridge/ws-rx-bridge.class';
 import { RoomContainer } from './room-container/room-container';
@@ -29,7 +29,7 @@ export class RxSocket {
   private router: Router;
 
   constructor(options: Options = { port: 3000 }) {
-    log.setLogLevel(options?.rxSocket?.logLevel || LogLevel.DEBUG);
+    log.setLogLevel(options.logLevel || LogLevel.DEBUG);
     this.rxBridge = new WsRxBridge(options);
     this.router = new Router(this.rxBridge.received$);
     Printer.printEnv();

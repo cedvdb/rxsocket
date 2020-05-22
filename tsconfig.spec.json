@@ -2,8 +2,9 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "./spec/dist",                        /* Redirect output structure to the directory. */
-    // "rootDir": "./spec/src",                       /* Specify the root directory of input files. Use to control the output directory structure with --outDir. */
+    "rootDir": "./",                       /* Specify the root directory of input files. Use to control the output directory structure with --outDir. */
   },
+  "exclude": []
   // "include": [
   //   "client",
   //   "shared",

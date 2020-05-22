@@ -10,7 +10,7 @@
   "scripts": {
     "link:publish": "tsc && cp package.json dist && cp README.md dist && cp tsconfig.json dist && cd dist && npm publish",
     "test": "npm run test:build && npm run test:run",
-    "test:build": "tsc -p tsconfig.spec.json",
+    "test:build": "rm -rf spec/dist && tsc -p tsconfig.spec.json",
     "test:run": "jasmine JASMINE_CONFIG_PATH==./spec/support/jasmine.json"
   },
   "repository": {

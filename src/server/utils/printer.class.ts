@@ -1,5 +1,5 @@
 import { LogLevel } from 'simply-logs';
-import { Route } from '~shared/route.interface';
+import { Route } from '../../shared/route.interface';
 import { RxBridge } from '../bridge/rx-bridge.interface';
 import { log } from '../utils/log';
 

@@ -1,5 +1,5 @@
 {
-  "name": "rxsocket",
+  "name": "@cedvdb/rxsocket",
   "version": "0.0.1",
   "description": "RxSocket",
   "main": "dist/index.js",

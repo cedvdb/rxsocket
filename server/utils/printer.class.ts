@@ -1,7 +1,7 @@
-import { IRxSocket } from '../rx-socket/rx-socket.interface';
+import { RxBridge } from '../bridge/rx-bridge.interface';
 import { log, LogLevel, prettyNode } from 'simply-logs';
 import { Route } from '~shared/route.interface';
-import { HttpServer } from 'server/http-server/http-server.type';
+import { AddressInfo } from 'net';
 
 log.transformFn = prettyNode;
 
@@ -23,16 +23,16 @@ export class Printer {
 		+ `Set your NODE_ENV environment variable to production for production mode`);
   }
 
-  static printLogo(addres: any){
-		const info = `AR Socket listenning on ${addres?.port}`
+  static printLogo(address: AddressInfo | string){
+		const info = `AR Socket listenning on port ${ typeof address === 'object' ? address.port : address }`;
 		log.info(`${startRocket}    ${info}${endRocket}`);
 	}
 
-  static printEvents(socket: IRxSocket, server: HttpServer) {
+  static printEvents(socket: RxBridge) {
     socket.connection$
-      .subscribe(connection => log.info(`connection  #${connection.id}, ${server.listenerCount('message')} concurrent connections`));
+      .subscribe(connection => log.info(`connection  #${connection.id}, x concurrent connections`));
     socket.close$
-      .subscribe(connection => log.info(`closing connection #${connection.id},  ${server.listenerCount('message')} concurrent connections`));
+      .subscribe(connection => log.info(`closing connection #${connection.id}, x concurrent connections`));
     socket.error$
       .subscribe(error => log.error(error));
     socket.received$

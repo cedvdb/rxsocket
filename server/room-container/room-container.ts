@@ -1,4 +1,4 @@
-import { IRxSocket } from '../rx-socket/rx-socket.interface';
+import { RxBridge } from '../bridge/rx-bridge.interface';
 import { Connection } from '../rx-socket/connection.interface';
 import { log } from 'simply-logs';
 
@@ -6,7 +6,7 @@ export class RoomContainer {
 	onlineUsers = new Map<number, Connection>(); // Online users is one big room
 	rooms = new Map<string, Map<number, Connection>>(); // <roomname, <connectionid, connection>>
 
-	constructor(private socket: IRxSocket) { }
+	constructor(private socket: RxBridge) { }
 
   listen() {
     this.socket.connection$

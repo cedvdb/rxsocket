@@ -4,31 +4,22 @@ import { Observable } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { Action, ActionEvent } from '~shared/action.interface';
 import { Route } from '~shared/route.interface';
-import { IRxSocket } from './rx-socket.interface';
+import { RxBridge } from '../bridge/rx-bridge.interface';
 import { WsRxBridge } from '../bridge/ws-rx-bridge.class';
-import { HttpServer } from '../http-server/http-server.type';
-import { createSimpleServer } from '../http-server/server';
-import { Config } from './rename.interface';
-import { Connection } from './connection.interface';
+import { RoomContainer } from '../room-container/room-container';
 import { Printer } from '../utils/printer.class';
-import { RoomContainer } from 'server/room-container/room-container';
-import { LogLevel } from 'simply-logs';
+import { Connection } from './connection.interface';
+import { Options } from './options.interface';
 
-
-// Api facade
-
-/**
- *
- */
-export class RxSocket implements IRxSocket {
-  private socket: IRxSocket;
+export class RxSocket {
+  private socket: RxBridge;
   private userContainer: RoomContainer;
 
-  constructor(options: Config = { logLevel: LogLevel.DEBUG }) {
+  constructor(options?: Options) {
     this.socket = new WsRxBridge(options);
     Printer.printEnv();
-    Printer.printLogo(this.httpServer.address());
-    Printer.printEvents(this.socket, this.httpServer);
+    Printer.printLogo(this.socket.address);
+    Printer.printEvents(this.socket);
     this.userContainer = new RoomContainer(this.socket);
   }
 
@@ -114,9 +105,9 @@ export class RxSocket implements IRxSocket {
 
   get rooms () { return this.userContainer.rooms; }
 
-  ////////////
-  // events //
-  ////////////
+  ///////////////
+  // rx bridge //
+  ///////////////
 
   /** when client connects */
   get connection$ () { return this.socket.connection$ }

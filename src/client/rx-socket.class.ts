@@ -8,6 +8,7 @@ import { Router } from './router/router.class';
 import { log } from './utils/log';
 import { Printer } from './utils/printer.class';
 import { Options } from './options.interface';
+import { NativeWsRxBridge } from './bridge/native-ws-rx-bridge.class';
 
 export class RxSocket implements RxBridge {
   private rxBridge: RxBridge;
@@ -15,7 +16,7 @@ export class RxSocket implements RxBridge {
 
   constructor(options: Options) {
     log.setLogLevel(options?.logLevel || LogLevel.DEBUG);
-    this.rxBridge = new WsRxBridge(options.url);
+    this.rxBridge = options.node ? new WsRxBridge(options.url) : new NativeWsRxBridge(options.url);
     this.router = new Router(this.rxBridge.received$);
     Printer.printLogo(options.url);
     Printer.printEvents(this.rxBridge);

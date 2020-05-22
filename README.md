@@ -148,6 +148,25 @@ a connection.
 
 ### Options
 
+##### Client 
+
+```javascript
+export interface Options {
+  /** url to which the websocket connects */
+  url: string;
+  /** specify the log level to only get message >= to this log level */
+  logLevel?: LogLevel;
+  /** when the client is started on node, it won't use the native websocket from the browser */
+  node?: boolean;
+}
+```
+
+Note: RxSocket architecture is agnostic in spirit. There are bridges for different websocket implementations When node is set to true, rxSocket uses the a bridge for the `WebSocket.Client` from the ws package, when false it uses the `NativeRxBridge` class that is just a bridge for native browser websocket.
+
+The codebase anticipate the possibility of a need for switching websocket implementation and is built with that in mind. At the moment it's not part of the public API, so if there is a need for this, please drop a feature request on github.
+
+##### Server
+
 RxSocket is based on ws, so everything that's valid on websocket/ws is valid here: (https://github.com/websockets/ws)
 
 Every option that is specific for rxSocket is under the rxSocket key
@@ -157,6 +176,7 @@ for example:
 ```
   const rxSocket = new RxSocket({ rxSocket: { logLevel: LogLevel.DEBUG }});
 ```
+
 
 ### Custom http server
 

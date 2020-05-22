@@ -1,6 +1,6 @@
 import { RxBridge } from '../bridge/rx-bridge.interface';
 import { LogLevel } from 'simply-logs';
-import { Route } from 'src/shared/route.interface';
+import { Route } from '~shared/route.interface';
 import { log } from './log';
 
 const startRocket = `

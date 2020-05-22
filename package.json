@@ -2,8 +2,8 @@
   "name": "@cedvdb/rxsocket",
   "version": "0.0.2",
   "description": "RxSocket",
-  "main": "dist/src/index.js",
-  "types": "dist/src/index.d.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "directories": {
     "test": "test"
   },

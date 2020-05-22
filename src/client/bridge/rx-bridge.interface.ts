@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs';
-import { Action, ActionEvent } from '~shared/action.interface';
+import { Action, ActionEvent } from 'src/shared/action.interface';
 
 
 export interface RxBridge {

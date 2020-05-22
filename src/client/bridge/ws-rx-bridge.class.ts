@@ -1,6 +1,6 @@
 import { Subject } from 'rxjs';
 import WebSocket from 'ws';
-import { Action, ActionEvent } from '~shared/action.interface';
+import { Action, ActionEvent } from 'src/shared/action.interface';
 import { RxBridge } from './rx-bridge.interface';
 
 export class WsRxBridge implements RxBridge {

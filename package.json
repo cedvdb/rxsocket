@@ -1,12 +1,14 @@
 {
   "name": "rxsocket",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "RxSocket",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "directories": {
     "test": "test"
   },
   "scripts": {
+    "prepublish": "tsc",
     "test": "npm run test:build && npm run test:run",
     "test:build": "tsc -p tsconfig.spec.json",
     "test:run": "jasmine JASMINE_CONFIG_PATH==./spec/support/jasmine.json"
@@ -15,7 +17,7 @@
     "type": "git",
     "url": "git+https://github.com/cedvdb/rxsocket.git"
   },
-  "author": "",
+  "author": "Cedric Vanden Bosch",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/cedvdb/rxsocket/issues"

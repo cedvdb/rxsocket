@@ -2,8 +2,8 @@
 import { Observable } from 'rxjs';
 import { Router } from '../router/router.class';
 import { LogLevel } from 'simply-logs';
-import { Action, ActionEvent } from '~shared/action.interface';
-import { Route } from '~shared/route.interface';
+import { Action, ActionEvent } from 'src/shared/action.interface';
+import { Route } from 'src/shared/route.interface';
 import { RxBridge } from '../bridge/rx-bridge.interface';
 import { WsRxBridge } from '../bridge/ws-rx-bridge.class';
 import { RoomContainer } from '../room-container/room-container';

@@ -1,4 +1,4 @@
-import { ActionEvent } from '~shared/action.interface';
+import { ActionEvent } from 'src/shared/action.interface';
 
 
 export interface Route {

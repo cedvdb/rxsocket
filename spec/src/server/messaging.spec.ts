@@ -3,7 +3,7 @@
 
 import { of } from 'rxjs';
 import { first, take } from 'rxjs/operators';
-import { RxSocket as RxSocketClient } from '../../../client';
+import { RxSocket as RxSocketClient } from '../../../src/client';
 import { createClient, server } from '../server-client';
 
 describe('Rx Socket Server - messaging', () => {

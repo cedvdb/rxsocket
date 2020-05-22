@@ -1,16 +1,14 @@
-import { RxSocket as RxSocketClient } from '../../../client';
-import { RxSocket as RxSocketServer } from '../../../server';
-import { first, take } from 'rxjs/operators';
 import { of } from 'rxjs';
+import { first, take } from 'rxjs/operators';
+import { RxSocket as RxSocketClient } from '../../../client';
 import { createClient, server } from '../server-client';
 
 describe('Rx Socket Client - messaging', () => {
 
   let client: RxSocketClient;
 
-  beforeEach(() => {
-    client = createClient();
-  });
+  beforeEach(() => client = createClient());
+  afterEach(() => client.close());
 
   it('should be able to do a dispatch round trip', (done) => {
     client.dispatch({ type: 'A', payload: 'TEST' });
@@ -42,9 +40,6 @@ describe('Rx Socket Client - messaging', () => {
           done();
       });
   });
-
-  afterEach(() => client.close());
-  afterAll(() => server.close());
 
 });
 

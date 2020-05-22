@@ -1,16 +1,14 @@
 
 
 import { RxSocket as RxSocketClient } from '../../../client';
-import { RxSocket as RxSocketServer } from '../../../server';
 import { createClient, server } from '../server-client';
 
 describe('Rx Socket Server - routing', () => {
 
   let client: RxSocketClient;
 
-  beforeEach(() => {
-    client = createClient();
-  });
+  beforeEach(() => client = createClient());
+  afterEach(() => client.close());
 
 
   it('should handle routing', (done) => {
@@ -34,9 +32,6 @@ describe('Rx Socket Server - routing', () => {
       .dispatch({ type: 'B' })
       .dispatch({ type: 'C' });
   });
-
-  afterEach(() => client.close());
-  afterAll(() => server.close());
 
 });
 

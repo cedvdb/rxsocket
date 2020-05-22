@@ -2,16 +2,14 @@
 
 import { first, take } from 'rxjs/operators';
 import { RxSocket as RxSocketClient } from '../../../client';
-import { RxSocket as RxSocketServer } from '../../../server';
 import { createClient, server } from '../server-client';
 
 describe('Rx Socket Client - event emitter', () => {
 
   let client: RxSocketClient;
 
-  beforeEach(() => {
-    client = createClient();
-  });
+  beforeEach(() => client = createClient());
+  afterEach(() => client.close());
 
   it('should emit connection', (done) => {
     client.connection$.pipe(first()).subscribe(_ => done());
@@ -43,10 +41,6 @@ describe('Rx Socket Client - event emitter', () => {
     })
     setTimeout(() => client.close(4000), 200);
   });
-
-
-  afterEach(() => client.close());
-  afterAll(() => server.close());
 
 });
 

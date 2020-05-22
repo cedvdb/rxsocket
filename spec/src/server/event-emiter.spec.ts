@@ -6,18 +6,13 @@ import { createClient, server } from '../server-client';
 describe('Rx Socket Server - event emitter', () => {
   let client: RxSocketClient;
 
-  beforeEach(() => {
-    client = createClient();
-  });
+  beforeEach(() => client = createClient());
+  afterEach(() => client.close());
 
   it('should emit connection', (done) => {
     server.connection$.pipe(first()).subscribe(_ => done());
   });
 
-  it('should emit close', (done) => {
-    setTimeout(() => client.close(), 100);
-    server.close$.pipe(first()).subscribe(_ => done());
-  });
 
   it('should emit received', (done) => {
     client.dispatch({ type: 'A' });
@@ -31,8 +26,10 @@ describe('Rx Socket Server - event emitter', () => {
     server.dispatched$.pipe(first()).subscribe(_ => done());
   });
 
-  afterEach(() => client.close());
-  afterAll(() => server.close());
+  it('should emit close', (done) => {
+    setTimeout(() => client.close(), 100);
+    server.close$.pipe(first()).subscribe(_ => done());
+  });
 
 });
 

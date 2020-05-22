@@ -1,16 +1,15 @@
 
 
-import { delay, first, take } from 'rxjs/operators';
+import { first, take } from 'rxjs/operators';
 import { RxSocket as RxSocketClient } from '../../../client';
 import { createClient, server } from '../server-client';
 
-describe('Rx Socket Server - rooms', () => {
+fdescribe('Rx Socket Server - rooms', () => {
 
   let client: RxSocketClient;
 
-  beforeEach(() => {
-    client = createClient();
-  });
+  beforeEach(() => client = createClient());
+  afterEach(() => client.close());
 
   it('should add user to online users', (done) => {
     server.connection$.pipe(take(1))
@@ -19,6 +18,20 @@ describe('Rx Socket Server - rooms', () => {
         expect(added).toBe(true);
         done();
       });
+  });
+
+  it('should remove user from online users when connection closes', (done) => {
+    console.log('online users: ', server.onlineUsers.size)
+    setTimeout(() => {
+      console.log('online users: ', server.onlineUsers.size)
+      client.close();
+    }, 100);
+    server.close$.pipe(first()).subscribe(_ => {
+      console.log('online users: ', server.onlineUsers.size)
+
+      expect(server.onlineUsers.size).toBe(0);
+      done();
+    });
   });
 
   it('should add user to room', (done) => {
@@ -33,20 +46,9 @@ describe('Rx Socket Server - rooms', () => {
       })
   });
 
-  it('should remove user from online users when connection closes', (done) => {
-    let size: number;
-    setTimeout(() => {
-      size = server.onlineUsers.size;
-      client.close();
-    }, 100);
-    server.close$.pipe(first()).subscribe(_ => {
-      expect(server.onlineUsers.size).toBe(size - 1);
-      done();
-    });
-  });
 
   it('should remove user from room & close room', (done) => {
-    server.connection$.pipe(take(1), delay(100))
+    server.connection$.pipe(take(1))
       .subscribe(connection => {
         server.addToRoom('test-room', connection);
         const added = server.rooms.get('test-room')?.has(connection.id);
@@ -58,8 +60,6 @@ describe('Rx Socket Server - rooms', () => {
       })
   });
 
-  afterEach(() => client.close());
-  afterAll(() => server.close());
 
 });
 

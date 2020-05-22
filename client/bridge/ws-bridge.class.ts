@@ -26,9 +26,12 @@ export class WsBridge implements Bridge {
     this.socket = new WebSocket(this.url);
     this.socket.onopen = event => this._connection$.next(event);
     this.socket.onclose = event => {
-      this.timeout = Math.min(this.timeout * 2, 10000);
-      if (event.code !== 1000)
+      console.log('closed ', event.code, event.reason)
+
+      if (event.code !== 1000) {
+        this.timeout = Math.min(this.timeout * 2, 10000);
         setTimeout(() => this.connect(), this.timeout);
+      }
       this._close$.next(event);
     };
     this.socket.onmessage = event => {
@@ -54,7 +57,9 @@ export class WsBridge implements Bridge {
     }
   }
 
-  /** closes the socket, will reconnect if the code is anything else than 1000 (default) */
+  /** closes the socket, will reconnect if the code is anything else than 1000 (default)
+   * https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent
+  */
   close(code = 1000) {
     this.socket.close(code);
   }

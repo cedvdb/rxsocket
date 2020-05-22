@@ -8,9 +8,8 @@ describe('Rx Socket Client - routing', () => {
 
   let client: RxSocketClient;
 
-  beforeEach(() => {
-    client = createClient();
-  });
+  beforeEach(() => client = createClient());
+  afterEach(() => client.close());
 
 
   it('should handle routing', (done) => {
@@ -38,8 +37,6 @@ describe('Rx Socket Client - routing', () => {
         dispatch({ type: 'C' });
       });
   });
-  afterEach(() => client.close());
-  afterAll(() => server.close());
 
 });
 

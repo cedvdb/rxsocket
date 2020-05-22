@@ -55,7 +55,7 @@ export class RxSocket implements Bridge {
     return this;
   }
 
-  close(): void {
-    this.wsBridge.close();
+  close(code?: number): void {
+    this.wsBridge.close(code);
   }
 }

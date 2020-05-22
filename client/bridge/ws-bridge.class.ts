@@ -27,7 +27,8 @@ export class WsBridge implements Bridge {
     this.socket.onopen = event => this._connection$.next(event);
     this.socket.onclose = event => {
       this.timeout = Math.min(this.timeout * 2, 10000);
-      setTimeout(() => this.connect(), this.timeout);
+      if (event.code !== 1000)
+        setTimeout(() => this.connect(), this.timeout);
       this._close$.next(event);
     };
     this.socket.onmessage = event => {
@@ -41,7 +42,6 @@ export class WsBridge implements Bridge {
       this._error$.next(event);
       this.socket.close();
     };
-
   }
 
   dispatch(action: Action): void {
@@ -54,8 +54,9 @@ export class WsBridge implements Bridge {
     }
   }
 
-  close() {
-    this.socket.close();
+  /** closes the socket, will reconnect if the code is anything else than 1000 (default) */
+  close(code = 1000) {
+    this.socket.close(code);
   }
 
 }

@@ -8,6 +8,6 @@ export interface Bridge {
   close$: Observable<any>;
   received$: Observable<ActionEvent>;
   dispatched$: Observable<Action>;
-  close: () => void;
+  close: (code?: number) => void;
   dispatch: (action: Action) => any;
 }

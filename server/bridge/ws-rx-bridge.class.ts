@@ -1,4 +1,4 @@
-import { Subject, ReplaySubject } from 'rxjs';
+import { Subject } from 'rxjs';
 import WebSocket from 'ws';
 import { Connection } from '../rx-socket/connection.interface';
 import { RxBridge } from './rx-bridge.interface';
@@ -9,7 +9,7 @@ export class WsRxBridge implements RxBridge {
   private static connectionID = 0;
   private wsServer: WebSocket.Server;
 
-	private _connection$ = new ReplaySubject<Connection>(1);
+	private _connection$ = new Subject<Connection>();
 	private _error$ = new Subject<Error>();
   private _close$ = new Subject<Connection>();
   private _received$ = new Subject<ActionEvent>();

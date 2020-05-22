@@ -1,9 +1,9 @@
 
+import { first } from 'rxjs/operators';
 import { RxSocket as RxSocketClient } from '../../../client';
 import { RxSocket as RxSocketServer } from '../../../server';
-import { first, tap } from 'rxjs/operators';
 
-describe('Rx Socket Server - events', () => {
+describe('Rx Socket Server - event emitter', () => {
   const createClient = () => new RxSocketClient({ url: 'ws://localhost:3001'});
   const createServer = () => new RxSocketServer({ port: 3001 });
 
@@ -35,18 +35,9 @@ describe('Rx Socket Server - events', () => {
     server.dispatched$.pipe(first()).subscribe(_ => done());
   });
 
-  it('should be able to do a dispatch in select', (done) => {
-    client.dispatch({ type: 'A' });
-    server.select('A')
-      .pipe(first())
-      .subscribe(({ dispatch }) => dispatch({ type: 'B' }));
-    client.select('B')
-      .pipe(first())
-      .subscribe(({ dispatch }) => dispatch({ type: 'C'}));
-    server.select('C').pipe(first())
-      .subscribe(_ => done());
-  });
+  afterEach(() => client.close());
+  afterAll(() => server.close());
 
-})
+});
 
 

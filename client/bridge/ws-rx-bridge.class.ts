@@ -1,9 +1,9 @@
 import { Subject } from 'rxjs';
 import WebSocket from 'ws';
 import { Action, ActionEvent } from '~shared/action.interface';
-import { Bridge } from './bridge.interface';
+import { RxBridge } from './rx-bridge.interface';
 
-export class WsBridge implements Bridge {
+export class WsRxBridge implements RxBridge {
   private socket!: WebSocket;
   private timeout = 50;
   private _connection$ = new Subject<WebSocket.OpenEvent>();
@@ -26,7 +26,6 @@ export class WsBridge implements Bridge {
     this.socket = new WebSocket(this.url);
     this.socket.onopen = event => this._connection$.next(event);
     this.socket.onclose = event => {
-      console.log('closed ', event.code, event.reason)
 
       if (event.code !== 1000) {
         this.timeout = Math.min(this.timeout * 2, 10000);

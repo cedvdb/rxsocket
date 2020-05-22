@@ -24,7 +24,7 @@ export class Printer {
   }
 
   static printLogo(address: AddressInfo | string){
-		const info = `AR Socket listenning on port ${ typeof address === 'object' ? address.port : address }`;
+		const info = `RxSocket listenning on ${ typeof address === 'object' ? address.port : address }`;
 		log.info(`${startRocket}    ${info}${endRocket}`);
 	}
 

@@ -2,12 +2,14 @@ import { Observable } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { Action, ActionEvent } from '~shared/action.interface';
 import { Route } from '~shared/route.interface';
-import { Bridge } from '../bridge/bridge.interface';
-import { WsBridge } from '../bridge/ws-bridge.class';
+import { RxBridge } from '../bridge/rx-bridge.interface';
+import { WsRxBridge } from '../bridge/ws-rx-bridge.class';
 import { Config } from './config.interface';
+import { Printer } from '../utils/printer.class';
+import { log, LogLevel } from 'simply-logs';
 
-export class RxSocket implements Bridge {
-  private wsBridge: Bridge;
+export class RxSocket implements RxBridge {
+  private rxBridge: RxBridge;
   private routes: Route[] = [];
 
   connection$: Observable<any>;
@@ -17,20 +19,23 @@ export class RxSocket implements Bridge {
   dispatched$: Observable<Action>;
 
   constructor(options: Config) {
-    this.wsBridge = options.wsBridge || new WsBridge(options.url);
-    this.connection$ = this.wsBridge.connection$;
-    this.received$ = this.wsBridge.received$;
-    this.error$ = this.wsBridge.error$;
-    this.close$ = this.wsBridge.close$;
-    this.dispatched$ = this.wsBridge.dispatched$;
+    log.setLogLevel(options.logLevel || LogLevel.DEBUG);
+    this.rxBridge = new WsRxBridge(options.url);
+    this.connection$ = this.rxBridge.connection$;
+    this.received$ = this.rxBridge.received$;
+    this.error$ = this.rxBridge.error$;
+    this.close$ = this.rxBridge.close$;
+    this.dispatched$ = this.rxBridge.dispatched$;
+    Printer.printLogo(options.url);
+    Printer.printEvents(this.rxBridge);
   }
 
   select(type: string): Observable<ActionEvent> {
-    return this.wsBridge.received$.pipe(
+    log.info(`type ${type} selected`)
+    return this.rxBridge.received$.pipe(
       filter(action => action.type === type)
     );
   }
-
 
   /**
    * To listen to specific action type,
@@ -46,16 +51,17 @@ export class RxSocket implements Bridge {
         filter(({ type }) => type === route.type),
       ).subscribe(actionEvent => route.handler(actionEvent));
       this.routes.push(route);
+      Printer.printRoutes(routes);
     });
 		return this;
 	}
 
   dispatch(action: Action): RxSocket {
-    this.wsBridge.dispatch(action);
+    this.rxBridge.dispatch(action);
     return this;
   }
 
   close(code?: number): void {
-    this.wsBridge.close(code);
+    this.rxBridge.close(code);
   }
 }

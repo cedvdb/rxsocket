@@ -4,12 +4,12 @@ import { first, take } from 'rxjs/operators';
 import { RxSocket as RxSocketClient } from '../../../client';
 import { createClient, server } from '../server-client';
 
-fdescribe('Rx Socket Server - rooms', () => {
+describe('Rx Socket Server - rooms', () => {
 
   let client: RxSocketClient;
 
   beforeEach(() => client = createClient());
-  afterEach(() => client.close());
+  afterEach((done) => client.close().then(_ => done()));
 
   it('should add user to online users', (done) => {
     server.connection$.pipe(take(1))
@@ -21,14 +21,8 @@ fdescribe('Rx Socket Server - rooms', () => {
   });
 
   it('should remove user from online users when connection closes', (done) => {
-    console.log('online users: ', server.onlineUsers.size)
-    setTimeout(() => {
-      console.log('online users: ', server.onlineUsers.size)
-      client.close();
-    }, 100);
+    setTimeout(() => client.close(), 200);
     server.close$.pipe(first()).subscribe(_ => {
-      console.log('online users: ', server.onlineUsers.size)
-
       expect(server.onlineUsers.size).toBe(0);
       done();
     });

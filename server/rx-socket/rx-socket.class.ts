@@ -9,7 +9,8 @@ import { RoomContainer } from '../room-container/room-container';
 import { Printer } from '../utils/printer.class';
 import { Connection } from './connection.interface';
 import { Options } from './options.interface';
-import { log, LogLevel } from 'simply-logs';
+import { LogLevel } from 'simply-logs';
+import { log } from '../utils/log';
 
 export class RxSocket {
   private socket: RxBridge;

@@ -28,8 +28,7 @@ export class WsRxBridge implements RxBridge {
     this.socket.onclose = event => {
 
       if (event.code !== 1000) {
-        this.timeout = Math.min(this.timeout * 2, 10000);
-        setTimeout(() => this.connect(), this.timeout);
+        setTimeout(() => this.connect(), this.getMaxedTimeout());
       }
       this._close$.next(event);
     };
@@ -51,16 +50,34 @@ export class WsRxBridge implements RxBridge {
       this.socket.send(JSON.stringify(action));
       this._dispatched$.next(action);
     } else {
-      this.timeout = Math.min(this.timeout * 2, 10000);
-      setTimeout(() => this.dispatch(action), this.timeout)
+      setTimeout(() => this.dispatch(action), this.getMaxedTimeout())
     }
   }
 
   /** closes the socket, will reconnect if the code is anything else than 1000 (default)
    * https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent
-  */
-  close(code = 1000) {
-    this.socket.close(code);
+   */
+  close(code = 1000): any {
+    const retry = new Promise(resolve => {
+      setTimeout(() => resolve(this.close(code)), 50)
+    });
+    switch (this.socket.readyState) {
+      case 0: // opening
+        return retry;
+      case 1: // opened
+        this.socket.close(code);
+        return retry
+      case 2: // closing
+        return retry;
+      case 3: // closed
+        return Promise.resolve();
+    }
+
+  }
+
+  private getMaxedTimeout() {
+    this.timeout = Math.min(this.timeout * 2, 10000);
+    return this.timeout;
   }
 
 }

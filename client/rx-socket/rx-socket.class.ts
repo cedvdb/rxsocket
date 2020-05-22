@@ -6,7 +6,8 @@ import { RxBridge } from '../bridge/rx-bridge.interface';
 import { WsRxBridge } from '../bridge/ws-rx-bridge.class';
 import { Config } from './config.interface';
 import { Printer } from '../utils/printer.class';
-import { log, LogLevel } from 'simply-logs';
+import { LogLevel } from 'simply-logs';
+import { log } from '../utils/log';
 
 export class RxSocket implements RxBridge {
   private rxBridge: RxBridge;
@@ -61,7 +62,7 @@ export class RxSocket implements RxBridge {
     return this;
   }
 
-  close(code?: number): void {
-    this.rxBridge.close(code);
+  close(code?: number): Promise<void> {
+    return this.rxBridge.close(code);
   }
 }

@@ -8,6 +8,6 @@ export interface RxBridge {
   close$: Observable<any>;
   received$: Observable<ActionEvent>;
   dispatched$: Observable<Action>;
-  close: (code?: number) => void;
+  close: (code?: number) => Promise<void>;
   dispatch: (action: Action) => any;
 }

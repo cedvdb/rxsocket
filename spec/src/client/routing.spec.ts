@@ -9,7 +9,7 @@ describe('Rx Socket Client - routing', () => {
   let client: RxSocketClient;
 
   beforeEach(() => client = createClient());
-  afterEach(() => client.close());
+  afterEach((done) => client.close().then(_ => done()));
 
 
   it('should handle routing', (done) => {

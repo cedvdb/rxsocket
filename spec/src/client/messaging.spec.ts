@@ -8,7 +8,7 @@ describe('Rx Socket Client - messaging', () => {
   let client: RxSocketClient;
 
   beforeEach(() => client = createClient());
-  afterEach(() => client.close());
+  afterEach((done) => client.close().then(_ => done()));
 
   it('should be able to do a dispatch round trip', (done) => {
     client.dispatch({ type: 'A', payload: 'TEST' });

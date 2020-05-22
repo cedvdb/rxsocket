@@ -11,7 +11,7 @@ describe('Rx Socket Server - messaging', () => {
   let client: RxSocketClient;
 
   beforeEach(() => client = createClient());
-  afterEach(() => client.close());
+  afterEach((done) => client.close().then(_ => done()));
 
   it('should be able to do a round trip via select', (done) => {
     client.dispatch({ type: 'A' });
@@ -37,7 +37,7 @@ describe('Rx Socket Server - messaging', () => {
 
   it('should be able to broadcast to all online users', (done) => {
     server.connection$.pipe(first())
-      .subscribe(_ => server.broadcast({ type: 'test' }));
+      .subscribe(_ => server.broadcast({ type: 'TEST' }));
     client.select('TEST').pipe(first()).subscribe(_ => done())
   });
 

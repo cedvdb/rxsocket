@@ -1,6 +1,6 @@
 import { RxBridge } from '../bridge/rx-bridge.interface';
 import { Connection } from '../rx-socket/connection.interface';
-import { log } from 'simply-logs';
+import { log } from '../utils/log';
 
 export class RoomContainer {
 	onlineUsers = new Map<number, Connection>(); // Online users is one big room

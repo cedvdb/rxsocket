@@ -1,9 +1,7 @@
-import { RxBridge } from '../bridge/rx-bridge.interface';
-import { log, LogLevel, prettyNode } from 'simply-logs';
+import { LogLevel } from 'simply-logs';
 import { Route } from '~shared/route.interface';
-import { AddressInfo } from 'net';
-
-log.transformFn = prettyNode;
+import { RxBridge } from '../bridge/rx-bridge.interface';
+import { log } from '../utils/log';
 
 const startRocket = `
       /\\
@@ -16,17 +14,20 @@ const endRocket = `
 
 export class Printer {
 
+  static printLogo(address: string | { port: number }){
+		const info = `RxSocket client listenning on ${ typeof address === 'object' ? address.port : address }`;
+		log.info(`${startRocket}    ${info}${endRocket}`);
+	}
+
+	static printRoutes(routes: Route[]){
+    log.table(LogLevel.INFO, routes);
+  }
 
   static printEnv(){
 		const env = process.env.NODE_ENV;
 		log.info(`NODE_ENV: app running in ${env ? env : 'dev'} mode. `
 		+ `Set your NODE_ENV environment variable to production for production mode`);
   }
-
-  static printLogo(address: AddressInfo | string){
-		const info = `RxSocket listenning on ${ typeof address === 'object' ? address.port : address }`;
-		log.info(`${startRocket}    ${info}${endRocket}`);
-	}
 
   static printEvents(socket: RxBridge, onlineUsers: Map<any, any>) {
     socket.connection$
@@ -42,10 +43,6 @@ export class Printer {
       .subscribe(action => log.info(`\x1b[36m Action ${ action.type } dispatched, payload:
         ${ JSON.stringify(action.payload) }`));
   }
-
-	static printRoutes(routes: Route[]){
-    log.table(LogLevel.INFO, routes);
-	}
 
 }
 

@@ -9,7 +9,7 @@ describe('Rx Socket Client - event emitter', () => {
   let client: RxSocketClient;
 
   beforeEach(() => client = createClient());
-  afterEach(() => client.close());
+  afterEach((done) => client.close().then(_ => done()));
 
   it('should emit connection', (done) => {
     client.connection$.pipe(first()).subscribe(_ => done());

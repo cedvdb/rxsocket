@@ -82,8 +82,63 @@ socket.dispatch({ type: 'GET_TIME' })
 
 # Documentation
 
-### Options
-### Events
 ### Routing
+
+For routing incoming `Action` you can either use `select()` or `route()`. The only difference between those is
+that with `route()` you do everything at once and a nicely formated table of the routes will be logged.
+
+select example:
+
+```javascript
+  const respond = (action: ActionEvent) => action.dispatch({ type: 'other action' });
+  server.select('A').subscribe(respond);
+  server.select('B').subscribe(respond);
+  server.select('C').subscribe(respond);
+```
+
+
+route example:
+
+```javascript
+  const respond = (action: ActionEvent) => action.dispatch({ type: 'other action' });
+  server.route([
+    { type: 'A', handler: respond },
+    { type: 'B', handler: respond },
+    { type: 'C', handler: respond },
+  ]);
+```
+
+### Events
+
+Each version of RxSocket (client and server) have observable attached on them so you can observe the lifecycle of 
+a connection.
+
+```javascript
+  const rxSocket = new RxSocket();
+  /** when client connects */
+  rxSocket.connection$: Observable<Connection>;
+  /** when an error occurs */
+  rxSocket.error$: Observable<Error>;
+  /** when a connection closes */
+  rxSocket.close$: Observable<Connection>;
+  /** action received */
+  rxSocket.received$: Observable<ActionEvent>;
+  /** action dispatched */
+  rxSocket.dispatched$: Observable<Action>;
+```
+
+### Options
+
+RxSocket is based on ws, so everything that's valid on websocket/ws is valid here: (https://github.com/websockets/ws)
+
+Every option that is specific for rxSocket is under the rxSocket key
+
+for example:
+
+```
+  const rxSocket = new RxSocket({ rxSocket: { logLevel: LogLevel.DEBUG }});
+```
+
 ### Custom http server
 
+Same as for websocket/ws (read options paragraph for more info).

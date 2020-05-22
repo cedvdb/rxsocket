@@ -1,39 +1,53 @@
 
 import { Observable } from 'rxjs';
-import { filter } from 'rxjs/operators';
+import { Router } from '../router/router.class';
+import { LogLevel } from 'simply-logs';
 import { Action, ActionEvent } from '~shared/action.interface';
 import { Route } from '~shared/route.interface';
 import { RxBridge } from '../bridge/rx-bridge.interface';
 import { WsRxBridge } from '../bridge/ws-rx-bridge.class';
 import { RoomContainer } from '../room-container/room-container';
+import { log } from '../utils/log';
 import { Printer } from '../utils/printer.class';
 import { Connection } from './connection.interface';
 import { Options } from './options.interface';
-import { LogLevel } from 'simply-logs';
-import { log } from '../utils/log';
 
+
+// Api Facade, this class is an aglomeration of other classes handling the background logic and only exposes
+// to the external world what's needed
+
+// RxBridge which is responsible of converting a websocket implementation into an rxjs version to use it here
+// Room Container is responsible of handling the room system as well as online users which is one big room
+// Router which is responsible for selecting and incoming messagestreams
+
+/**
+ * RxSocket a reactive websocket
+ */
 export class RxSocket {
-  private socket: RxBridge;
+  private rxBridge: RxBridge;
   private roomContainer: RoomContainer;
+  private router: Router;
 
   constructor(options?: Options) {
     log.setLogLevel(options?.rxSocket?.logLevel || LogLevel.DEBUG);
-    this.socket = new WsRxBridge(options);
+    this.rxBridge = new WsRxBridge(options);
+    this.router = new Router(this.rxBridge.received$);
     Printer.printEnv();
-    Printer.printLogo(this.socket.address);
-    this.roomContainer = new RoomContainer(this.socket);
-    Printer.printEvents(this.socket, this.onlineUsers);
+    Printer.printLogo(this.rxBridge.address);
+    this.roomContainer = new RoomContainer(this.rxBridge);
+    Printer.printEvents(this.rxBridge, this.onlineUsers);
   }
 
+  ////////////
+  // Router //
+  ////////////
+
   /**
-   * To listen to specific action type
+   * To listen to specific action type stream
    * @param type action type you want to select
    */
   select(type: string): Observable<ActionEvent> {
-    log.info(`${type} selected`);
-    return this.received$.pipe(
-      filter(event => event.type === type),
-    );
+    return this.router.select(type);
   }
 
   /**
@@ -43,16 +57,13 @@ export class RxSocket {
    * and will subscribe automatically.
    * @param routes all the type with their handler
    */
-  route(routes: Route[]): RxSocket {
-    routes.forEach(route => {
-      // not using this.select because we don't need the log
-      this.received$.pipe(
-        filter(({ type }) => type === route.type),
-      ).subscribe(actionEvent => route.handler(actionEvent));
-    });
-    Printer.printRoutes(routes);
-		return this;
+  route(routes: Route[]): void {
+    return this.router.route(routes);
   }
+
+  ///////////
+  // rooms //
+  ///////////
 
   /**
    * Dispatch an action to all clients
@@ -62,49 +73,35 @@ export class RxSocket {
    * @param omit users to which we don't desire to send the action, for example
    * we might want to broadcast a message to everyone except the sender
    */
-  broadcast(action: Action, omit?: Connection[], roomname?: string): RxSocket {
-    const room = roomname === undefined ?
-      this.roomContainer.onlineUsers : this.roomContainer.rooms.get(roomname);
-
-    if (!room) {
-      log.debug(`broadcasting to room ${roomname} but it doesn't exist. Doing nothing.`);
-      return this;
-    }
-
-    room.forEach(connection => {
-      // if it's not omited we dispatch
-			if (!omit || !omit.find(omitedConn => omitedConn.id === connection.id)) {
-				connection.dispatch(action);
-      }
-    });
-
-    return this;
+  broadcast(action: Action, omit?: Connection[], roomname?: string): void {
+    return this.roomContainer.broadcast(action, omit, roomname);
   }
-
-
-  ///////////
-  // rooms //
-  ///////////
 
   /**
    * Add an user to a room,
    * will create a room if it doesn't exist
    * will close room when there is no more connections
    * @param roomname the roomname
-   * @param conn the connection we want to add
+   * @param connection the connection we want to add
    */
-  addToRoom(roomname: string, connection: Connection): RxSocket{
+  addToRoom(roomname: string, connection: Connection): void{
     this.roomContainer.addToRoom(roomname, connection);
-    return this;
   }
 
-  removeFromRoom(roomname: string, connection: Connection): RxSocket{
+  /**
+   * Removes user from room
+   * Will destroy room if there is no user left.
+   * @param roomname the roomname
+   * @param connection the connection we want to remove
+   */
+  removeFromRoom(roomname: string, connection: Connection): void{
     this.roomContainer.removeFromRoom(roomname, connection);
-    return this;
   }
 
+  /** a map of online users */
   get onlineUsers () { return this.roomContainer.onlineUsers; }
 
+  /** a map of rooms */
   get rooms () { return this.roomContainer.rooms; }
 
   ///////////////
@@ -112,22 +109,23 @@ export class RxSocket {
   ///////////////
 
   /** when client connects */
-  get connection$ () { return this.socket.connection$ }
+  get connection$ () { return this.rxBridge.connection$ }
 
   /** when client closes connection */
-  get close$ () { return this.socket.close$ }
+  get close$ () { return this.rxBridge.close$ }
 
   /** when an error occurs */
-  get error$ () { return this.socket.error$ }
+  get error$ () { return this.rxBridge.error$ }
 
   /** actions received */
-  get received$ () { return this.socket.received$ }
+  get received$ () { return this.rxBridge.received$ }
 
   /** actions sent */
-  get dispatched$ () { return this.socket.dispatched$ }
+  get dispatched$ () { return this.rxBridge.dispatched$ }
 
+  /** closes server */
   close() {
-
+    return this.rxBridge.close();
   }
 
 }

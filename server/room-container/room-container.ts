@@ -1,3 +1,4 @@
+import { Action } from '~shared/action.interface';
 import { RxBridge } from '../bridge/rx-bridge.interface';
 import { Connection } from '../rx-socket/connection.interface';
 import { log } from '../utils/log';
@@ -44,7 +45,7 @@ export class RoomContainer {
 	}
 
   /**
-   * removes user from room
+   * Removes user from room
    * Will destroy room if there is no user left.
    */
 	removeFromRoom(roomname: string, connection: Connection){
@@ -58,6 +59,22 @@ export class RoomContainer {
 		}
 		// remove from ser connection too
 		connection.rooms!.delete(roomname);
-	}
+  }
+
+  broadcast(action: Action, omit?: Connection[], roomname?: string): void {
+    const room = roomname === undefined ?
+      this.onlineUsers : this.rooms.get(roomname);
+
+    if (!room) {
+      return log.debug(`broadcasting to room ${roomname} but it doesn't exist. Doing nothing.`);
+    }
+
+    room.forEach(connection => {
+      // if it's not omited we dispatch
+			if (!omit || !omit.find(omitedConn => omitedConn.id === connection.id)) {
+				connection.dispatch(action);
+      }
+    });
+  }
 }
 

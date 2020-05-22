@@ -27,10 +27,9 @@ describe('Rx Socket Server - routing', () => {
       { type: 'C', handler: checkDone },
     ]);
 
-    client
-      .dispatch({ type: 'A' })
-      .dispatch({ type: 'B' })
-      .dispatch({ type: 'C' });
+    client.dispatch({ type: 'A' })
+    client.dispatch({ type: 'B' })
+    client.dispatch({ type: 'C' });
   });
 
 });

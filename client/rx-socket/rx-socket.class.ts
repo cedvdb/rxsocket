@@ -1,41 +1,36 @@
 import { Observable } from 'rxjs';
-import { filter } from 'rxjs/operators';
+import { LogLevel } from 'simply-logs';
 import { Action, ActionEvent } from '~shared/action.interface';
 import { Route } from '~shared/route.interface';
 import { RxBridge } from '../bridge/rx-bridge.interface';
 import { WsRxBridge } from '../bridge/ws-rx-bridge.class';
-import { Config } from './config.interface';
-import { Printer } from '../utils/printer.class';
-import { LogLevel } from 'simply-logs';
+import { Router } from '../router/router.class';
 import { log } from '../utils/log';
+import { Printer } from '../utils/printer.class';
+import { Config } from './config.interface';
 
 export class RxSocket implements RxBridge {
   private rxBridge: RxBridge;
-  private routes: Route[] = [];
-
-  connection$: Observable<any>;
-	received$: Observable<ActionEvent>;
-	error$: Observable<any>;
-  close$: Observable<any>;
-  dispatched$: Observable<Action>;
+  private router: Router;
 
   constructor(options: Config) {
     log.setLogLevel(options.logLevel || LogLevel.DEBUG);
     this.rxBridge = new WsRxBridge(options.url);
-    this.connection$ = this.rxBridge.connection$;
-    this.received$ = this.rxBridge.received$;
-    this.error$ = this.rxBridge.error$;
-    this.close$ = this.rxBridge.close$;
-    this.dispatched$ = this.rxBridge.dispatched$;
+    this.router = new Router(this.rxBridge.received$);
     Printer.printLogo(options.url);
     Printer.printEvents(this.rxBridge);
   }
 
+  /** dispatch action to client */
+  dispatch(action: Action): void {
+    this.rxBridge.dispatch(action);
+  }
+
+  /** select action stream based on their type
+   * @param type the type selected
+   */
   select(type: string): Observable<ActionEvent> {
-    log.info(`type ${type} selected`)
-    return this.rxBridge.received$.pipe(
-      filter(action => action.type === type)
-    );
+    return this.router.select(type);
   }
 
   /**
@@ -45,24 +40,30 @@ export class RxSocket implements RxBridge {
    * and will subscribe automatically.
    * @param routes all the type with their handler
    */
-  route(routes: Route[]): RxSocket {
-    routes.forEach(route => {
-      // not using this.select because we don't need the log
-      this.received$.pipe(
-        filter(({ type }) => type === route.type),
-      ).subscribe(actionEvent => route.handler(actionEvent));
-      this.routes.push(route);
-      Printer.printRoutes(routes);
-    });
-		return this;
+  route(routes: Route[]): void {
+    return this.router.route(routes);
 	}
 
-  dispatch(action: Action): RxSocket {
-    this.rxBridge.dispatch(action);
-    return this;
-  }
-
-  close(code?: number): Promise<void> {
+  /** closes the socket, will reconnect if the code is anything else than 1000 (default)
+   * https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent
+   */
+  close(code = 1000): Promise<void> {
     return this.rxBridge.close(code);
   }
+
+  /** when client connects */
+  get connection$ () { return this.rxBridge.connection$ }
+
+  /** when client closes connection */
+  get close$ () { return this.rxBridge.close$ }
+
+  /** when an error occurs */
+  get error$ () { return this.rxBridge.error$ }
+
+  /** actions received */
+  get received$ () { return this.rxBridge.received$ }
+
+  /** actions sent */
+  get dispatched$ () { return this.rxBridge.dispatched$ }
+
 }

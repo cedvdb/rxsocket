@@ -57,7 +57,7 @@ export class WsRxBridge implements RxBridge {
   /** closes the socket, will reconnect if the code is anything else than 1000 (default)
    * https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent
    */
-  close(code = 1000): any {
+  close(code?: number): any {
     const retry = new Promise(resolve => {
       setTimeout(() => resolve(this.close(code)), 50)
     });

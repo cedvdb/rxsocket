@@ -6,18 +6,17 @@ export class RoomContainer {
 	onlineUsers = new Map<number, Connection>(); // Online users is one big room
 	rooms = new Map<string, Map<number, Connection>>(); // <roomname, <connectionid, connection>>
 
-	constructor(private socket: RxBridge) { }
-
-  listen() {
-    this.socket.connection$
+	constructor(socket: RxBridge) {
+    socket.connection$
       .subscribe(connection => this.addUser(connection));
-    this.socket.close$
+    socket.close$
       .subscribe(connection => this.removeUser(connection));
   }
 
+
 	/** adds user to list of active users */
 	private addUser(connection: Connection) {
-		connection.rooms = new Map();
+		connection.rooms = new Map<string, any>();
 		this.onlineUsers.set(connection.id, connection);
 	}
 
@@ -36,7 +35,7 @@ export class RoomContainer {
 		let room = this.rooms.get(roomname);
 		// create new room if it does not exist
 		if (!room) {
-			room = new Map();
+			room = new Map<number, Connection>();
 			this.rooms.set(roomname, room);
 		}
 		room.set(connection.id, connection);

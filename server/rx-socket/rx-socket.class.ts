@@ -1,5 +1,4 @@
 
-import log from 'loglevel';
 import { Observable } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { Action, ActionEvent } from '~shared/action.interface';
@@ -10,17 +9,19 @@ import { RoomContainer } from '../room-container/room-container';
 import { Printer } from '../utils/printer.class';
 import { Connection } from './connection.interface';
 import { Options } from './options.interface';
+import { log, LogLevel } from 'simply-logs';
 
 export class RxSocket {
   private socket: RxBridge;
-  private userContainer: RoomContainer;
+  private roomContainer: RoomContainer;
 
   constructor(options?: Options) {
+    log.setLogLevel(options?.rxSocket?.logLevel || LogLevel.DEBUG);
     this.socket = new WsRxBridge(options);
     Printer.printEnv();
     Printer.printLogo(this.socket.address);
-    Printer.printEvents(this.socket);
-    this.userContainer = new RoomContainer(this.socket);
+    this.roomContainer = new RoomContainer(this.socket);
+    Printer.printEvents(this.socket, this.onlineUsers);
   }
 
   /**
@@ -62,7 +63,7 @@ export class RxSocket {
    */
   broadcast(action: Action, omit?: Connection[], roomname?: string): RxSocket {
     const room = roomname === undefined ?
-      this.userContainer.onlineUsers : this.userContainer.rooms.get(roomname);
+      this.roomContainer.onlineUsers : this.roomContainer.rooms.get(roomname);
 
     if (!room) {
       log.debug(`broadcasting to room ${roomname} but it doesn't exist. Doing nothing.`);
@@ -71,7 +72,7 @@ export class RxSocket {
 
     room.forEach(connection => {
       // if it's not omited we dispatch
-			if (!omit || omit.find(omitedConn => omitedConn.id === connection.id)) {
+			if (!omit || !omit.find(omitedConn => omitedConn.id === connection.id)) {
 				connection.dispatch(action);
       }
     });
@@ -92,18 +93,18 @@ export class RxSocket {
    * @param conn the connection we want to add
    */
   addToRoom(roomname: string, connection: Connection): RxSocket{
-    this.userContainer.addToRoom(roomname, connection);
+    this.roomContainer.addToRoom(roomname, connection);
     return this;
   }
 
   removeFromRoom(roomname: string, connection: Connection): RxSocket{
-    this.userContainer.removeFromRoom(roomname, connection);
+    this.roomContainer.removeFromRoom(roomname, connection);
     return this;
   }
 
-  get onlineUsers () { return this.userContainer.onlineUsers; }
+  get onlineUsers () { return this.roomContainer.onlineUsers; }
 
-  get rooms () { return this.userContainer.rooms; }
+  get rooms () { return this.roomContainer.rooms; }
 
   ///////////////
   // rx bridge //

@@ -3,12 +3,10 @@
 import { first, take } from 'rxjs/operators';
 import { RxSocket as RxSocketClient } from '../../../client';
 import { RxSocket as RxSocketServer } from '../../../server';
+import { createClient, server } from '../server-client';
 
 describe('Rx Socket Client - event emitter', () => {
-  const createClient = () => new RxSocketClient({ url: 'ws://localhost:3002'});
-  const createServer = () => new RxSocketServer({ port: 3002 });
 
-  const server = createServer();
   let client: RxSocketClient;
 
   beforeEach(() => {
@@ -43,7 +41,7 @@ describe('Rx Socket Client - event emitter', () => {
       }
       i++;
     })
-    setTimeout(() => client.close(1005), 200);
+    setTimeout(() => client.close(4000), 200);
   });
 
 

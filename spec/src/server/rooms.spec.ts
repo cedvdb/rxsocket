@@ -1,14 +1,11 @@
 
 
+import { delay, first, take } from 'rxjs/operators';
 import { RxSocket as RxSocketClient } from '../../../client';
-import { RxSocket as RxSocketServer } from '../../../server';
-import { take, first } from 'rxjs/operators';
+import { createClient, server } from '../server-client';
 
 describe('Rx Socket Server - rooms', () => {
-  const createClient = () => new RxSocketClient({ url: 'ws://localhost:3001'});
-  const createServer = () => new RxSocketServer({ port: 3001 });
 
-  const server = createServer();
   let client: RxSocketClient;
 
   beforeEach(() => {
@@ -37,15 +34,19 @@ describe('Rx Socket Server - rooms', () => {
   });
 
   it('should remove user from online users when connection closes', (done) => {
-    setTimeout(() => client.close(), 100);
+    let size: number;
+    setTimeout(() => {
+      size = server.onlineUsers.size;
+      client.close();
+    }, 100);
     server.close$.pipe(first()).subscribe(_ => {
-      expect(server.onlineUsers.size).toBe(0);
+      expect(server.onlineUsers.size).toBe(size - 1);
       done();
     });
   });
 
   it('should remove user from room & close room', (done) => {
-    server.connection$.pipe(take(1))
+    server.connection$.pipe(take(1), delay(100))
       .subscribe(connection => {
         server.addToRoom('test-room', connection);
         const added = server.rooms.get('test-room')?.has(connection.id);

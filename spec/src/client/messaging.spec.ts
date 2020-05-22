@@ -2,12 +2,10 @@ import { RxSocket as RxSocketClient } from '../../../client';
 import { RxSocket as RxSocketServer } from '../../../server';
 import { first, take } from 'rxjs/operators';
 import { of } from 'rxjs';
+import { createClient, server } from '../server-client';
 
 describe('Rx Socket Client - messaging', () => {
-  const createClient = () => new RxSocketClient({ url: 'ws://localhost:3001'});
-  const createServer = () => new RxSocketServer({ port: 3001 });
 
-  const server = createServer();
   let client: RxSocketClient;
 
   beforeEach(() => {

@@ -28,11 +28,11 @@ export class Printer {
 		log.info(`${startRocket}    ${info}${endRocket}`);
 	}
 
-  static printEvents(socket: RxBridge) {
+  static printEvents(socket: RxBridge, onlineUsers: Map<any, any>) {
     socket.connection$
-      .subscribe(connection => log.info(`connection  #${connection.id}, x concurrent connections`));
+      .subscribe(connection => log.info(`connection  #${connection.id}, ${onlineUsers.size} concurrent connections`));
     socket.close$
-      .subscribe(connection => log.info(`closing connection #${connection.id}, x concurrent connections`));
+      .subscribe(connection => log.info(`closing connection #${connection.id}, ${onlineUsers.size} concurrent connections`));
     socket.error$
       .subscribe(error => log.error(error));
     socket.received$

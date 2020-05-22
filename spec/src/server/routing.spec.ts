@@ -37,10 +37,11 @@ describe('Rx Socket Server - routing', () => {
       .dispatch({ type: 'C' });
   });
 
+
   afterAll(() => {
     client.close();
     server.close();
-  })
+  });
 
 
 })

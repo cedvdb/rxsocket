@@ -1,5 +1,3 @@
 /node_modules
 /spec/dist
-/client/dist
-/server/dist
 /dist

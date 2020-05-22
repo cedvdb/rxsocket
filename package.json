@@ -1,6 +1,6 @@
 {
   "name": "@cedvdb/rxsocket",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "RxSocket",
   "main": "index.js",
   "types": "index.d.ts",

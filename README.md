@@ -53,7 +53,7 @@ That's it! If you understood the above you already understand the framework.
 
 
 ```javascript
-import RxSocket from '@cedvdb/rxsocket/server';
+import { RxSocket } from '@cedvdb/rxsocket/server';
 
 const socket = new RxSocket({ port: 3000 });
 
@@ -68,7 +68,7 @@ socket.select('GET_TIME')
 ### 2. Creating the client
 
 ```javascript
-import RxSocket from '@cedvdb/rxsocket/client';
+import { RxSocket } from '@cedvdb/rxsocket/client';
 
 const socket = new RxSocket({ url: 'ws://localhost:3000' });
 

@@ -1,4 +1,4 @@
-# AR Socket
+# RX Socket
 
 A dead easy reactive websocket framework.
 
@@ -53,7 +53,7 @@ That's it! If you understood the above you already understand the framework.
 
 
 ```javascript
-import RxSocket from 'rxsocket/server';
+import RxSocket from '@cedvdb/rxsocket/server';
 
 const socket = new RxSocket({ port: 3000 });
 
@@ -68,7 +68,7 @@ socket.select('GET_TIME')
 ### 2. Creating the client
 
 ```javascript
-import RxSocket from 'rxsocket/client';
+import RxSocket from '@cedvdb/rxsocket/client';
 
 const socket = new RxSocket({ url: 'ws://localhost:3000' });
 
@@ -78,25 +78,6 @@ socket.select('TIME')
   });
 
 socket.dispatch({ type: 'GET_TIME' })
-```
-
-### Angular example:
-
-```javascript 
-export class AppComponent implements OnInit {
-  messages$: Observable<any> = rxSocket.select('MESSAGES').pipe(
-    map((action) => action.payload)
-  );
-
-  ngOnInit() {
-    rxSocket.dispatch({ type: 'GET_MESSAGES' });
-  }
-
-  post(content: string) {
-    const message = { content };
-    rxSocket.dispatch({ type: 'POST_MESSAGES', payload: message });
-  }
-}
 ```
 
 # Documentation
